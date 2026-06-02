@@ -1,0 +1,7 @@
+com\ecotukar\controller\ViewController.class
+com\ecotukar\model\User.class
+com\ecotukar\model\PickupRequest.class
+com\ecotukar\model\WalletTransaction.class
+com\ecotukar\EcoTukarApplication.class
+com\ecotukar\service\EcoTukarService.class
+com\ecotukar\controller\ApiController.class
