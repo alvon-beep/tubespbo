@@ -42,12 +42,12 @@
                 <li><a href="#impact" class="hover:text-emerald-600 transition">Dampak Bersama</a></li>
                 <li><a href="#footer" class="hover:text-emerald-600 transition">Kontak</a></li>
             </ul>
-            <a href="/customer" class="px-5 py-2.5 rounded-full bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-0.5 active:translate-y-0 transition">
+            <a href="/login" class="px-5 py-2.5 rounded-full bg-emerald-600 text-white text-sm font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-0.5 active:translate-y-0 transition">
                 Masuk Dashboard
             </a>
         </nav>
     </header>
-
+ 
     <!-- ===== Hero Section ===== -->
     <section class="max-w-7xl mx-auto px-6 pt-16 pb-24 grid md:grid-cols-2 gap-12 items-center">
         <div class="space-y-6">
@@ -61,7 +61,7 @@
                 EcoTukar menghubungkan rumah tangga dengan bank sampah digital. Pesan penjemputan sampah, kumpulkan koin reward, dan tukarkan voucher menarik!
             </p>
             <div class="pt-4 flex flex-wrap gap-4">
-                <a href="/customer" class="px-8 py-3.5 rounded-full bg-emerald-600 text-white font-bold shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-0.5 transition">
+                <a href="/login" class="px-8 py-3.5 rounded-full bg-emerald-600 text-white font-bold shadow-xl shadow-emerald-200 hover:bg-emerald-700 hover:-translate-y-0.5 transition">
                     Mulai Sekarang
                 </a>
                 <a href="#how" class="px-8 py-3.5 rounded-full bg-white border border-emerald-200 text-emerald-700 font-bold hover:bg-emerald-50 hover:-translate-y-0.5 transition">

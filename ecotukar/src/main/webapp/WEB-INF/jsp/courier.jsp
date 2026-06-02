@@ -40,13 +40,18 @@
                     <div class="w-12 h-12 rounded-full bg-white/20 border border-white/10 grid place-items-center text-2xl shadow-inner">👷</div>
                     <div>
                         <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-100">Selamat Tugas,</p>
-                        <p class="font-extrabold text-base" id="courier-name">Budi Santoso</p>
+                        <p class="font-extrabold text-base" id="courier-name">Memuat...</p>
                     </div>
                 </div>
-                <button class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/20 flex items-center justify-center font-bold relative transition">
-                    🔔
-                    <div class="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full"></div>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/20 flex items-center justify-center font-bold relative transition">
+                        🔔
+                        <div class="absolute top-2 right-2 w-2 h-2 bg-amber-400 rounded-full"></div>
+                    </button>
+                    <a href="/logout" class="w-10 h-10 rounded-full bg-rose-500/80 hover:bg-rose-600 text-white flex items-center justify-center font-bold transition" title="Keluar">
+                        🚪
+                    </a>
+                </div>
             </div>
 
             <!-- Dashboard Summary Statistics -->
@@ -105,11 +110,16 @@
         // Fetch assigned pickup tickets
         async function fetchCourierRoutes() {
             try {
+                // Get active logged in courier details
+                const profileRes = await fetch('/api/profile');
+                const user = await profileRes.json();
+                document.getElementById('courier-name').innerText = user.name;
+
                 const res = await fetch('/api/pickups');
                 const pickups = await res.json();
 
-                // Filter for "Budi S." assigned requests
-                const budiPickups = pickups.filter(p => p.courier === 'Budi S.' || p.courier === 'Budi Santoso');
+                // Filter for this courier's assigned requests
+                const budiPickups = pickups.filter(p => p.courier === user.name || p.courier.includes(user.name.split(' ')[0]) || p.courier === 'Budi S.');
                 
                 // Count active pending tasks
                 const activeTasks = budiPickups.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');

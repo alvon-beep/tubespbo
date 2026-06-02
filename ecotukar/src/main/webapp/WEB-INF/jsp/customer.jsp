@@ -38,12 +38,15 @@
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 grid place-items-center text-white font-extrabold shadow-md">E</div>
             <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-emerald-700 to-green-700 bg-clip-text text-transparent">EcoTukar</span>
         </div>
-        <nav class="space-y-2 text-sm font-semibold text-slate-500 font-semibold">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-700 transition">🏠 Dashboard</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">📦 Riwayat Pickup</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🪙 E-Wallet</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🎁 Reward</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">⚙️ Pengaturan</a>
+        <nav class="space-y-2 text-sm font-semibold text-slate-500 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-700 transition">🏠 Dashboard</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">📦 Riwayat Pickup</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🪙 E-Wallet</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🎁 Reward</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">⚙️ Pengaturan</a>
+            </div>
+            <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50 hover:text-rose-700 transition font-bold border border-rose-100/50 mt-10">🚪 Keluar (Logout)</a>
         </nav>
     </aside>
 
@@ -213,7 +216,7 @@
         // Fetch profile data
         async function fetchProfile() {
             try {
-                const res = await fetch('/api/profile?username=sarah');
+                const res = await fetch('/api/profile');
                 const user = await res.json();
                 
                 // Update views

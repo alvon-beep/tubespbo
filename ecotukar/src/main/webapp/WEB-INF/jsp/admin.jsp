@@ -36,12 +36,15 @@
             <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center text-white font-extrabold shadow-md">E</div>
             <span class="font-extrabold text-lg tracking-tight text-white">EcoTukar Admin</span>
         </div>
-        <nav class="space-y-2 text-sm font-semibold text-emerald-300">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">📊 Dashboard</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal & Kurir</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
+        <nav class="space-y-2 text-sm font-semibold text-emerald-300 flex-1 flex flex-col justify-between">
+            <div class="space-y-2">
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">📊 Dashboard</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal & Kurir</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
+            </div>
+            <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-rose-900/60 hover:text-white text-rose-300 font-bold border border-emerald-950 mt-10 transition">🚪 Keluar (Logout)</a>
         </nav>
     </aside>
 
