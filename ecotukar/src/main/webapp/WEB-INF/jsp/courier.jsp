@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -107,7 +108,7 @@
                 const res = await fetch('/api/pickups');
                 const pickups = await res.json();
 
-                // Filter for "Budi S." assigned requests (and omit COMPLETED if desired, let's show all states to see progress)
+                // Filter for "Budi S." assigned requests
                 const budiPickups = pickups.filter(p => p.courier === 'Budi S.' || p.courier === 'Budi Santoso');
                 
                 // Count active pending tasks
@@ -214,7 +215,7 @@
                 if (res.ok) {
                     let alertMsg = "";
                     if (newStatus === 'ON_ROUTE') alertMsg = "Mulai rute penjemputan! Status diubah ke ON ROUTE.";
-                    else if (newStatus === 'PICKED_UP') alertMsg = "Sampah telah diangkut ke kendaraan! Status diubah ke PICKED UP (Menunggu timbangan Admin).";
+                    else if (newStatus === 'PICKED_UP') alertMsg = "Sampah telah diangkut! Status diubah ke PICKED UP (Menunggu timbangan Admin).";
                     else if (newStatus === 'CANCELLED') alertMsg = "Jadwal penjemputan telah dibatalkan.";
 
                     alert(`ID: ${id}\n\n${alertMsg}`);

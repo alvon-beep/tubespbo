@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -302,9 +303,8 @@
         function autoPopulateWeighForm(id, type, weight) {
             convId.value = id;
             convType.value = type;
-            convActualWeight.value = weight; // Baseline to estimated weight
+            convActualWeight.value = weight;
             
-            // Set dynamic rates per waste type
             let rate = 40;
             if (type === 'Plastik') rate = 50;
             else if (type === 'Kertas') rate = 40;
@@ -316,7 +316,6 @@
 
             calculateLiveCoins();
 
-            // Scroll beautifully to the form
             document.getElementById('conversionForm').scrollIntoView({ behavior: 'smooth' });
         }
 

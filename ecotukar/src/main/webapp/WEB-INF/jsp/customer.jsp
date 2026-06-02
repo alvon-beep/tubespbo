@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -37,7 +38,7 @@
             <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 grid place-items-center text-white font-extrabold shadow-md">E</div>
             <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-emerald-700 to-green-700 bg-clip-text text-transparent">EcoTukar</span>
         </div>
-        <nav class="space-y-2 text-sm font-semibold">
+        <nav class="space-y-2 text-sm font-semibold text-slate-500 font-semibold">
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-700 transition">🏠 Dashboard</a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">📦 Riwayat Pickup</a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🪙 E-Wallet</a>
@@ -83,7 +84,7 @@
             <!-- ===== Request Form Column ===== -->
             <section class="lg:col-span-2 bg-white rounded-2xl p-6 border border-emerald-100/70 shadow-sm space-y-6">
                 <div>
-                    <h3 class="text-lg font-extrabold text-slate-900">🚛 Request Pickup Sampah</h3>
+                    <h3 class="text-lg font-extrabold text-slate-900">Request Pickup Sampah</h3>
                     <p class="text-slate-400 text-xs mt-0.5">Jadwalkan penjemputan sampah daur ulang Anda langsung dari depan rumah.</p>
                 </div>
                 <form id="pickupForm" class="grid md:grid-cols-2 gap-5">
@@ -108,7 +109,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Catatan Kurir (opsional)</label>
-                        <input id="note" type="text" placeholder="Letakkan di depan pagar pagar..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                        <input id="note" type="text" placeholder="Letakkan di depan pagar..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
                     </div>
                     <div class="md:col-span-2 pt-2">
                         <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-200/80 hover:-translate-y-0.5 active:translate-y-0 transition duration-150">
@@ -227,7 +228,6 @@
                 walletBalance.innerText = user.points.toLocaleString() + ' 🪙';
 
                 // Recalculate Mock Ecological Stats based on points / pickups
-                // Lets make it dynamic!
                 await fetchTransactionsAndRecalc(user.points);
             } catch(e) {
                 console.error("Error fetching profile", e);
@@ -288,8 +288,6 @@
 
         // Initialize and Update dynamic contribution charts using Chart.js
         function updateChart(latestWeight) {
-            // Lets model weights over months: Des, Jan, Feb, Mar, Apr, Mei
-            // We append some offset of latestWeight into the last item
             const baseValues = [4, 7, 5, 9, 11, 12];
             const addedWeight = latestWeight - 48.2;
             baseValues[5] = 12 + addedWeight;
