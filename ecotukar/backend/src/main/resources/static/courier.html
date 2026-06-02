@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Courier Dashboard — EcoTukar</title>
+  <meta name="description" content="Dashboard kurir EcoTukar. Lihat rute pickup hari ini, check-in lokasi, dan update status pengangkutan sampah." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide-up { animation: slideUp 0.4s ease-out forwards; }
+    .slide-up-2 { animation: slideUp 0.4s ease-out 0.05s forwards; opacity: 0; }
+    .slide-up-3 { animation: slideUp 0.4s ease-out 0.1s forwards; opacity: 0; }
+    .slide-up-4 { animation: slideUp 0.4s ease-out 0.15s forwards; opacity: 0; }
+    .slide-up-5 { animation: slideUp 0.4s ease-out 0.2s forwards; opacity: 0; }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .pulse-ring { animation: pulse-ring 2s infinite; }
+  </style>
+</head>
+<body class="min-h-screen bg-emerald-50/60 font-sans text-slate-800 antialiased">
+
+  <!-- Mobile-first container -->
+  <div class="max-w-md mx-auto pb-24 relative">
+
+    <!-- ===== Header ===== -->
+    <header class="bg-gradient-to-br from-emerald-600 to-green-700 text-white p-5 rounded-b-3xl shadow-lg relative overflow-hidden slide-up">
+      <!-- Decorative circles -->
+      <div class="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-white/10"></div>
+      <div class="absolute -bottom-10 -left-4 w-20 h-20 rounded-full bg-white/10"></div>
+
+      <div class="relative z-10">
+        <!-- Top row -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-white/25 grid place-items-center text-2xl border-2 border-white/30">👷</div>
+            <div>
+              <p class="text-xs opacity-80">Selamat pagi,</p>
+              <p class="font-bold text-base">Budi Santoso</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="w-9 h-9 rounded-full bg-white/20 grid place-items-center hover:bg-white/30 transition-colors relative">
+              🔔
+              <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-rose-400 text-white text-[8px] font-bold grid place-items-center">2</span>
+            </button>
+            <a href="index.html" class="w-9 h-9 rounded-full bg-white/20 grid place-items-center hover:bg-white/30 transition-colors text-sm" title="Logout">⏻</a>
+          </div>
+        </div>
+
+        <!-- Daily summary -->
+        <div class="mt-5 grid grid-cols-3 gap-2 text-center">
+          <div class="bg-white/15 rounded-xl py-3 backdrop-blur border border-white/20">
+            <p class="text-xl font-extrabold">5</p>
+            <p class="text-[10px] uppercase opacity-80 font-semibold mt-0.5">Pickup</p>
+          </div>
+          <div class="bg-white/15 rounded-xl py-3 backdrop-blur border border-white/20">
+            <p class="text-xl font-extrabold">22 kg</p>
+            <p class="text-[10px] uppercase opacity-80 font-semibold mt-0.5">Estimasi</p>
+          </div>
+          <div class="bg-white/15 rounded-xl py-3 backdrop-blur border border-white/20">
+            <p class="text-xl font-extrabold">11.5 km</p>
+            <p class="text-[10px] uppercase opacity-80 font-semibold mt-0.5">Rute</p>
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="mt-4">
+          <div class="flex items-center justify-between text-xs opacity-80 mb-1.5">
+            <span>Progress hari ini</span>
+            <span>0/5 selesai</span>
+          </div>
+          <div class="h-1.5 bg-white/20 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-white rounded-full transition-all duration-500" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== Smart Routing List ===== -->
+    <section class="p-4">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="font-bold text-base flex items-center gap-2">🗺️ <span>Rute Hari Ini</span></h2>
+        <span class="text-xs text-slate-500 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">Diurutkan jarak terdekat</span>
+      </div>
+
+      <!-- Pickup cards -->
+      <div id="pickup-list" class="space-y-3">
+
+        <!-- Pickup 1 -->
+        <article class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm slide-up" data-id="P-01" data-status="pending">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white grid place-items-center font-bold text-sm flex-shrink-0 shadow-sm">1</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-bold text-sm truncate">Sarah Putri</p>
+                <span class="status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 flex-shrink-0">Menunggu</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">📍 Jl. Melati No. 21</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5 text-[11px]">
+                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Plastik • 3 kg</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">⏱️ 09:00</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">🛵 0.8 km</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3.5 grid grid-cols-3 gap-2">
+            <button onclick="setStatus('P-01', 'checkin')" class="py-2 rounded-xl text-xs font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 active:scale-95 transition-all">📍 Check-in</button>
+            <button onclick="setStatus('P-01', 'diangkut')" class="py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">✅ Diangkut</button>
+            <button onclick="setStatus('P-01', 'dibatalkan')" class="py-2 rounded-xl text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 active:scale-95 transition-all">✖ Batal</button>
+          </div>
+        </article>
+
+        <!-- Pickup 2 -->
+        <article class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm slide-up-2" data-id="P-02" data-status="pending">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white grid place-items-center font-bold text-sm flex-shrink-0 shadow-sm">2</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-bold text-sm truncate">Andi Wijaya</p>
+                <span class="status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 flex-shrink-0">Menunggu</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">📍 Jl. Mawar No. 5</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5 text-[11px]">
+                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Kertas • 5 kg</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">⏱️ 09:30</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">🛵 1.4 km</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3.5 grid grid-cols-3 gap-2">
+            <button onclick="setStatus('P-02', 'checkin')" class="py-2 rounded-xl text-xs font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 active:scale-95 transition-all">📍 Check-in</button>
+            <button onclick="setStatus('P-02', 'diangkut')" class="py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">✅ Diangkut</button>
+            <button onclick="setStatus('P-02', 'dibatalkan')" class="py-2 rounded-xl text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 active:scale-95 transition-all">✖ Batal</button>
+          </div>
+        </article>
+
+        <!-- Pickup 3 -->
+        <article class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm slide-up-3" data-id="P-03" data-status="pending">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white grid place-items-center font-bold text-sm flex-shrink-0 shadow-sm">3</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-bold text-sm truncate">Rina Lestari</p>
+                <span class="status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 flex-shrink-0">Menunggu</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">📍 Jl. Anggrek No. 12</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5 text-[11px]">
+                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Kaca • 8 kg</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">⏱️ 10:00</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">🛵 2.1 km</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3.5 grid grid-cols-3 gap-2">
+            <button onclick="setStatus('P-03', 'checkin')" class="py-2 rounded-xl text-xs font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 active:scale-95 transition-all">📍 Check-in</button>
+            <button onclick="setStatus('P-03', 'diangkut')" class="py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">✅ Diangkut</button>
+            <button onclick="setStatus('P-03', 'dibatalkan')" class="py-2 rounded-xl text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 active:scale-95 transition-all">✖ Batal</button>
+          </div>
+        </article>
+
+        <!-- Pickup 4 -->
+        <article class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm slide-up-4" data-id="P-04" data-status="pending">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white grid place-items-center font-bold text-sm flex-shrink-0 shadow-sm">4</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-bold text-sm truncate">Doni Pratama</p>
+                <span class="status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 flex-shrink-0">Menunggu</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">📍 Jl. Kenanga No. 7</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5 text-[11px]">
+                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Logam • 2 kg</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">⏱️ 10:45</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">🛵 3.0 km</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3.5 grid grid-cols-3 gap-2">
+            <button onclick="setStatus('P-04', 'checkin')" class="py-2 rounded-xl text-xs font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 active:scale-95 transition-all">📍 Check-in</button>
+            <button onclick="setStatus('P-04', 'diangkut')" class="py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">✅ Diangkut</button>
+            <button onclick="setStatus('P-04', 'dibatalkan')" class="py-2 rounded-xl text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 active:scale-95 transition-all">✖ Batal</button>
+          </div>
+        </article>
+
+        <!-- Pickup 5 -->
+        <article class="bg-white rounded-2xl p-4 border border-emerald-100 shadow-sm slide-up-5" data-id="P-05" data-status="pending">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-emerald-600 text-white grid place-items-center font-bold text-sm flex-shrink-0 shadow-sm">5</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-2">
+                <p class="font-bold text-sm truncate">Maya Anggun</p>
+                <span class="status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold bg-amber-100 text-amber-700 flex-shrink-0">Menunggu</span>
+              </div>
+              <p class="text-xs text-slate-500 mt-0.5">📍 Jl. Cempaka No. 9</p>
+              <div class="mt-2.5 flex flex-wrap gap-1.5 text-[11px]">
+                <span class="px-2 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-semibold border border-emerald-100">Plastik • 4 kg</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">⏱️ 11:30</span>
+                <span class="px-2 py-1 rounded-lg bg-slate-100 text-slate-600">🛵 4.2 km</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-3.5 grid grid-cols-3 gap-2">
+            <button onclick="setStatus('P-05', 'checkin')" class="py-2 rounded-xl text-xs font-semibold bg-sky-100 text-sky-700 hover:bg-sky-200 active:scale-95 transition-all">📍 Check-in</button>
+            <button onclick="setStatus('P-05', 'diangkut')" class="py-2 rounded-xl text-xs font-semibold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition-all shadow-sm">✅ Diangkut</button>
+            <button onclick="setStatus('P-05', 'dibatalkan')" class="py-2 rounded-xl text-xs font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 active:scale-95 transition-all">✖ Batal</button>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ===== Bottom Navigation ===== -->
+    <nav class="fixed bottom-0 inset-x-0 max-w-md mx-auto bg-white border-t border-emerald-100 grid grid-cols-4 py-2 text-[11px] font-semibold text-slate-500 shadow-lg z-50">
+      <button class="flex flex-col items-center gap-0.5 text-emerald-600 py-1">
+        <span class="text-xl">🏠</span>
+        <span>Beranda</span>
+      </button>
+      <button class="flex flex-col items-center gap-0.5 py-1 hover:text-emerald-600 transition-colors">
+        <span class="text-xl">🗺️</span>
+        <span>Rute</span>
+      </button>
+      <button class="flex flex-col items-center gap-0.5 py-1 hover:text-emerald-600 transition-colors">
+        <span class="text-xl">📜</span>
+        <span>Riwayat</span>
+      </button>
+      <a href="index.html" class="flex flex-col items-center gap-0.5 py-1 hover:text-emerald-600 transition-colors text-center">
+        <span class="text-xl">👤</span>
+        <span>Profil</span>
+      </a>
+    </nav>
+  </div>
+
+  <script>
+    const statusMap = {
+      pending:    { text: 'Menunggu',   cls: 'bg-amber-100 text-amber-700' },
+      checkin:    { text: 'Check-in',   cls: 'bg-sky-100 text-sky-700' },
+      diangkut:   { text: 'Diangkut',   cls: 'bg-emerald-100 text-emerald-700' },
+      dibatalkan: { text: 'Dibatalkan', cls: 'bg-rose-100 text-rose-700' },
+    };
+
+    let completedCount = 0;
+
+    function setStatus(id, status) {
+      const card = document.querySelector(`[data-id="${id}"]`);
+      if (!card) return;
+
+      const prevStatus = card.dataset.status;
+      card.dataset.status = status;
+
+      // Update badge
+      const badge = card.querySelector('.status-badge');
+      const { text, cls } = statusMap[status];
+      badge.textContent = text;
+      badge.className = `status-badge text-[10px] px-2.5 py-0.5 rounded-full font-semibold flex-shrink-0 ${cls}`;
+
+      // Visual feedback for completed states
+      if (status === 'diangkut') {
+        card.classList.add('opacity-75');
+        if (prevStatus !== 'diangkut') {
+          completedCount = Math.min(completedCount + 1, 5);
+          updateProgress();
+        }
+      } else if (status === 'dibatalkan') {
+        card.classList.add('opacity-50');
+        if (prevStatus === 'diangkut') {
+          completedCount = Math.max(completedCount - 1, 0);
+          updateProgress();
+        }
+      } else {
+        card.classList.remove('opacity-75', 'opacity-50');
+        if (prevStatus === 'diangkut') {
+          completedCount = Math.max(completedCount - 1, 0);
+          updateProgress();
+        }
+      }
+    }
+
+    function updateProgress() {
+      const pct = (completedCount / 5) * 100;
+      document.getElementById('progress-bar').style.width = pct + '%';
+    }
+  </script>
+
+</body>
+</html>
