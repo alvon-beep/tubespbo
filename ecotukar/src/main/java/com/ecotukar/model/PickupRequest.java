@@ -1,14 +1,7 @@
 package com.ecotukar.model;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "pickup_requests")
 public class PickupRequest {
-    
-    @Id
     private String id; // REQ-XXXX
-    
     private String username;
     private String customerName;
     private String address;

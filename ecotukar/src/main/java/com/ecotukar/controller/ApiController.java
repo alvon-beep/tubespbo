@@ -5,6 +5,8 @@ import com.ecotukar.model.PickupRequest;
 import com.ecotukar.model.WalletTransaction;
 import com.ecotukar.service.EcoTukarService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +27,7 @@ public class ApiController {
         User user = service.getUserByUsername(username);
         if (user == null) {
             // Safe fallback
-            return new User(username, "", username, username + "@mail.com", "CUSTOMER", "👤", "Alamat Belum Set", "2026", 0);
+            return new User(username, username, username + "@mail.com", "CUSTOMER", "👤", "Alamat Belum Set", "2026", 0, 0);
         }
         return user;
     }
@@ -45,6 +47,10 @@ public class ApiController {
         String note = (String) body.getOrDefault("note", "");
         String username = (String) body.getOrDefault("username", "sarah");
         
+        if (weight < 3.0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estimasi berat minimal 3 kg!");
+        }
+
         User customer = service.getUserByUsername(username);
         String name = (customer != null) ? customer.getName() : "Pengguna Baru";
         String addr = (customer != null) ? customer.getAddress() : "Alamat default";
@@ -77,16 +83,35 @@ public class ApiController {
         double actualWeight = Double.parseDouble(body.get("actualWeight").toString());
         int ratePerKg = Integer.parseInt(body.get("ratePerKg").toString());
         
+        if (actualWeight < 3.0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Berat riil sampah minimal 3 kg!");
+        }
+
         service.convertCoins(id, actualWeight, ratePerKg);
         return Map.of("message", "Coins successfully credited to wallet", "status", "success");
     }
 
+    // Convert coins to ewallet balance
+    @PostMapping("/wallet/convert")
+    public Map<String, Object> convertCoinsToEWallet(@RequestBody Map<String, Object> body) {
+        String username = (String) body.getOrDefault("username", "sarah");
+        int coins = Integer.parseInt(body.get("coins").toString());
+
+        if (coins < 600) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minimal konversi adalah 600 koin (Rp30.000)");
+        }
+
+        boolean success = service.convertCoinsToEWallet(username, coins);
+        if (!success) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Koin tidak mencukupi atau pengguna tidak ditemukan");
+        }
+
+        return Map.of("message", "Konversi koin ke saldo E-Wallet berhasil!", "status", "success");
+    }
+
     // Get point wallet history transactions
     @GetMapping("/transactions")
-    public List<WalletTransaction> getTransactions(@RequestParam(required = false) String username) {
-        if (username == null || username.equalsIgnoreCase("all")) {
-            return service.getAllTransactions();
-        }
-        return service.getTransactions(username);
+    public List<WalletTransaction> getTransactions() {
+        return service.getTransactions();
     }
 }
