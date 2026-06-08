@@ -25,7 +25,7 @@ public class ApiController {
         User user = service.getUserByUsername(username);
         if (user == null) {
             // Safe fallback
-            return new User(username, username, username + "@mail.com", "CUSTOMER", "👤", "Alamat Belum Set", "2026", 0);
+            return new User(username, "", username, username + "@mail.com", "CUSTOMER", "👤", "Alamat Belum Set", "2026", 0);
         }
         return user;
     }
@@ -83,7 +83,10 @@ public class ApiController {
 
     // Get point wallet history transactions
     @GetMapping("/transactions")
-    public List<WalletTransaction> getTransactions() {
-        return service.getTransactions();
+    public List<WalletTransaction> getTransactions(@RequestParam(required = false) String username) {
+        if (username == null || username.equalsIgnoreCase("all")) {
+            return service.getAllTransactions();
+        }
+        return service.getTransactions(username);
     }
 }
