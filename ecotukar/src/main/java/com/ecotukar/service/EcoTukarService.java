@@ -2,62 +2,74 @@ package com.ecotukar.service;
 
 import com.ecotukar.model.User;
 import com.ecotukar.model.PickupRequest;
+import com.ecotukar.model.PickupVerification;
 import com.ecotukar.model.WalletTransaction;
 import com.ecotukar.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.ecotukar.repository.PickupRequestRepository;
+import com.ecotukar.repository.PickupVerificationRepository;
+import com.ecotukar.repository.WalletTransactionRepository;
 import org.springframework.stereotype.Service;
+import jakarta.annotation.PostConstruct;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class EcoTukarService {
-    private final List<User> users = new ArrayList<>();
-    private final List<PickupRequest> pickups = new ArrayList<>();
-    private final List<WalletTransaction> transactions = new ArrayList<>();
-    private final AtomicInteger requestCounter = new AtomicInteger(1046); // Start from REQ-1046
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PickupRequestRepository pickupRequestRepository;
+    private final PickupVerificationRepository pickupVerificationRepository;
+    private final WalletTransactionRepository walletTransactionRepository;
 
-    public EcoTukarService() {
-        // Initialize Default Mock Users removed to use Database
+    private final AtomicInteger requestCounter = new AtomicInteger(1046);
+    private final AtomicInteger verificationCounter = new AtomicInteger(1);
 
-        // Initialize Default Mock Pickup Tickets
-        pickups.add(new PickupRequest("REQ-1041", "sarah", "Sarah Putri", "Jl. Melati No. 21", "Plastik", 3.0, "2026-05-20", "Letakkan di pagar", "Budi S.", "ASSIGNED", "09:00"));
-        pickups.add(new PickupRequest("REQ-1042", "andi", "Andi Wijaya", "Jl. Mawar No. 5", "Kertas", 5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30"));
-        pickups.add(new PickupRequest("REQ-1043", "rina", "Rina Lestari", "Jl. Anggrek No. 12", "Kaca", 8.0, "2026-05-21", "Ketuk pintu", "Eko P.", "ON_ROUTE", "10:00"));
+    public EcoTukarService(UserRepository userRepository, 
+                           PickupRequestRepository pickupRequestRepository,
+                           PickupVerificationRepository pickupVerificationRepository,
+                           WalletTransactionRepository walletTransactionRepository) {
+        this.userRepository = userRepository;
+        this.pickupRequestRepository = pickupRequestRepository;
+        this.pickupVerificationRepository = pickupVerificationRepository;
+        this.walletTransactionRepository = walletTransactionRepository;
+    }
+
+    @PostConstruct
+    public void init() {
+        long reqCount = pickupRequestRepository.count();
+        if (reqCount > 0) requestCounter.set(1046 + (int)reqCount);
+
+        long verCount = pickupVerificationRepository.count();
+        if (verCount > 0) verificationCounter.set(1 + (int)verCount);
         
-        PickupRequest req4 = new PickupRequest("REQ-1044", "doni", "Doni Pratama", "Jl. Kenanga No. 7", "Logam", 2.0, "2026-05-21", "", "Budi S.", "COMPLETED", "10:45");
-        req4.setActualWeight(2.0);
-        pickups.add(req4);
-        
-        pickups.add(new PickupRequest("REQ-1045", "maya", "Maya Anggun", "Jl. Cempaka No. 9", "Plastik", 4.0, "2026-05-22", "", "Belum", "PENDING", "11:30"));
-
-        // Initialize Default Wallet Point History for Sarah
-        transactions.add(new WalletTransaction("Pickup Plastik 2.4kg", "12 Mei 2026", "+120"));
-        transactions.add(new WalletTransaction("Tukar Voucher Belanja", "08 Mei 2026", "-300"));
-        transactions.add(new WalletTransaction("Pickup Kertas 5.1kg", "03 Mei 2026", "+210"));
-        transactions.add(new WalletTransaction("Bonus Referral", "01 Mei 2026", "+50"));
+        // Seed initial data if DB is empty
+        if (reqCount == 0) {
+            pickupRequestRepository.save(new PickupRequest("REQ-1041", "sarah", "Sarah Putri", "Jl. Melati No. 21", "Plastik", 3.0, "2026-05-20", "Letakkan di pagar", "Budi S.", "ASSIGNED", "09:00"));
+            pickupRequestRepository.save(new PickupRequest("REQ-1042", "andi", "Andi Wijaya", "Jl. Mawar No. 5", "Kertas", 5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30"));
+            pickupRequestRepository.save(new PickupRequest("REQ-1043", "rina", "Rina Lestari", "Jl. Anggrek No. 12", "Kaca", 8.0, "2026-05-21", "Ketuk pintu", "Eko P.", "ON_ROUTE", "10:00"));
+            
+            PickupRequest req4 = new PickupRequest("REQ-1044", "doni", "Doni Pratama", "Jl. Kenanga No. 7", "Logam", 2.0, "2026-05-21", "", "Budi S.", "COMPLETED", "10:45");
+            req4.setActualWeight(2.0);
+            pickupRequestRepository.save(req4);
+            
+            pickupRequestRepository.save(new PickupRequest("REQ-1045", "maya", "Maya Anggun", "Jl. Cempaka No. 9", "Plastik", 4.0, "2026-05-22", "", "Belum", "PENDING", "11:30"));
+            
+            // Re-adjust counter
+            requestCounter.set(1046);
+        }
     }
 
     public List<User> getUsers() {
-        return users;
+        return userRepository.findAll();
     }
 
     public User getUserByUsername(String username) {
-        User dbUser = userRepository.findByUsername(username);
-        if (dbUser != null) return dbUser;
-        
-        return users.stream()
-                .filter(u -> u.getUsername().equalsIgnoreCase(username))
-                .findFirst()
-                .orElse(null);
+        return userRepository.findByUsername(username);
     }
 
     public List<PickupRequest> getPickups() {
-        return pickups;
+        return pickupRequestRepository.findAll();
     }
 
     public PickupRequest addPickup(PickupRequest req) {
@@ -65,55 +77,69 @@ public class EcoTukarService {
         req.setId(newId);
         req.setCourier("Belum");
         req.setStatus("PENDING");
-        req.setTime("12:00"); // Standard default target time
-        pickups.add(req);
-        return req;
+        req.setTime("12:00");
+        return pickupRequestRepository.save(req);
     }
 
     public void assignCourier(String id, String courierName) {
-        for (PickupRequest req : pickups) {
-            if (req.getId().equalsIgnoreCase(id)) {
-                req.setCourier(courierName);
-                if (req.getStatus().equalsIgnoreCase("PENDING")) {
-                    req.setStatus("ASSIGNED");
-                }
-                break;
+        pickupRequestRepository.findById(id).ifPresent(req -> {
+            req.setCourier(courierName);
+            if (req.getStatus().equalsIgnoreCase("PENDING")) {
+                req.setStatus("ASSIGNED");
             }
-        }
+            pickupRequestRepository.save(req);
+        });
     }
 
     public void updateStatus(String id, String status) {
-        for (PickupRequest req : pickups) {
-            if (req.getId().equalsIgnoreCase(id)) {
-                req.setStatus(status.toUpperCase());
-                break;
-            }
+        pickupRequestRepository.findById(id).ifPresent(req -> {
+            req.setStatus(status.toUpperCase());
+            pickupRequestRepository.save(req);
+        });
+    }
+
+    public PickupVerification verifyPickup(String id, boolean dataValid, String physicalCondition) {
+        PickupRequest req = pickupRequestRepository.findById(id).orElse(null);
+        if (req != null) {
+            PickupVerification verification = new PickupVerification(
+                "VER-" + verificationCounter.getAndIncrement(),
+                req,
+                dataValid,
+                physicalCondition,
+                "Hari Ini"
+            );
+            pickupVerificationRepository.save(verification);
+            
+            req.setStatus("PICKED_UP");
+            pickupRequestRepository.save(req);
+            
+            return verification;
         }
+        return null;
     }
 
     public void convertCoins(String id, double actualWeight, int ratePerKg) {
         if (actualWeight < 3.0) {
             throw new IllegalArgumentException("Berat riil sampah minimal 3 kg!");
         }
-        for (PickupRequest req : pickups) {
-            if (req.getId().equalsIgnoreCase(id)) {
-                req.setActualWeight(actualWeight);
-                req.setStatus("COMPLETED");
+        
+        pickupRequestRepository.findById(id).ifPresent(req -> {
+            req.setActualWeight(actualWeight);
+            req.setStatus("COMPLETED");
+            pickupRequestRepository.save(req);
 
-                // Calculate points
-                int pointsEarned = (int) (actualWeight * ratePerKg);
+            int pointsEarned = (int) (actualWeight * ratePerKg);
 
-                // Find customer user and reward coins
-                User customer = getUserByUsername(req.getUsername());
-                if (customer != null) {
-                    customer.addPoints(pointsEarned);
-                    // Add to wallet history
-                    String transTitle = "Pickup " + req.getWasteType() + " " + actualWeight + "kg";
-                    transactions.add(0, new WalletTransaction(transTitle, "Hari Ini", "+" + pointsEarned));
-                }
-                break;
+            User customer = getUserByUsername(req.getUsername());
+            if (customer != null) {
+                customer.addPoints(pointsEarned);
+                userRepository.save(customer);
+
+                String transTitle = "Pickup " + req.getWasteType() + " " + actualWeight + "kg";
+                WalletTransaction trans = new WalletTransaction(customer, transTitle, "Hari Ini", "+" + pointsEarned);
+                walletTransactionRepository.save(trans);
             }
-        }
+        });
     }
 
     public boolean convertCoinsToEWallet(String username, int coinsToConvert) {
@@ -121,27 +147,30 @@ public class EcoTukarService {
         if (user == null) {
             return false;
         }
-        if (coinsToConvert < 600) {
-            return false;
-        }
-        if (user.getPoints() < coinsToConvert) {
+
+        // Delegate business logic to EWallet class (Encapsulation)
+        boolean success = user.getEWallet().convertCoinsToBalance(coinsToConvert, 50);
+        if (!success) {
             return false;
         }
 
-        // 100 coins = 5000 IDR (1 coin = 50 IDR)
+        userRepository.save(user);
+
         int rupiahEarned = coinsToConvert * 50;
-
-        user.setPoints(user.getPoints() - coinsToConvert);
-        user.setEwalletBalance(user.getEwalletBalance() + rupiahEarned);
-
-        // Add to wallet history
         String transTitle = "Konversi Koin ke E-Wallet";
         String formattedRupiah = String.format("Rp %,d", rupiahEarned).replace(',', '.');
-        transactions.add(0, new WalletTransaction(transTitle, "Hari Ini", "-" + coinsToConvert + " 🪙 (+" + formattedRupiah + ")"));
+        WalletTransaction trans = new WalletTransaction(user, transTitle, "Hari Ini", "-" + coinsToConvert + " 🪙 (+" + formattedRupiah + ")");
+        walletTransactionRepository.save(trans);
+        
         return true;
     }
 
+    public List<WalletTransaction> getTransactionsByUser(User user) {
+        return walletTransactionRepository.findByUserOrderByIdDesc(user);
+    }
+    
+    // Fallback for getting all (admin usage)
     public List<WalletTransaction> getTransactions() {
-        return transactions;
+        return walletTransactionRepository.findAll();
     }
 }

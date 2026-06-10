@@ -18,17 +18,6 @@
 </head>
 <body class="min-h-screen bg-emerald-50/40 font-sans text-slate-800 antialiased">
 
-    <!-- ===== Floating Role Switcher for Verification ===== -->
-    <div class="fixed bottom-6 right-6 z-50 bg-emerald-900/95 backdrop-blur-md text-emerald-100 p-4 rounded-2xl shadow-2xl border border-emerald-700/50 max-w-xs transition-all hover:scale-105">
-        <p class="text-xs font-bold uppercase tracking-wider mb-2 text-emerald-400">⚡ Simulator Peran (Verify Flow)</p>
-        <div class="grid grid-cols-2 gap-1.5 text-[11px] font-semibold">
-            <a href="/" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">🏠 Home</a>
-            <a href="/customer" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">👩‍🦰 Customer</a>
-            <a href="/courier" class="px-2.5 py-1.5 rounded-lg bg-emerald-800 text-white border border-emerald-600/50 text-center">👷 Kurir</a>
-            <a href="/admin" class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">💼 Admin</a>
-        </div>
-    </div>
-
     <!-- Mobile-First Container, centered on larger displays -->
     <div class="max-w-md mx-auto pb-28 min-h-screen bg-slate-50 shadow-2xl flex flex-col relative border-x border-emerald-100">
         
@@ -39,7 +28,7 @@
                     <div class="w-12 h-12 rounded-full bg-white/20 border border-white/10 grid place-items-center text-2xl shadow-inner">👷</div>
                     <div>
                         <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-100">Selamat Tugas,</p>
-                        <p class="font-extrabold text-base" id="courier-name">Budi Santoso</p>
+                        <p class="font-extrabold text-base" id="courier-name" th:text="${name} ?: 'Budi Santoso'">Budi Santoso</p>
                     </div>
                 </div>
                 <button class="w-10 h-10 rounded-full bg-white/15 hover:bg-white/20 flex items-center justify-center font-bold relative transition">
@@ -89,17 +78,58 @@
             <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
                 <span class="text-xl">📜</span>Riwayat
             </button>
-            <button class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
-                <span class="text-xl">👤</span>Profil
-            </button>
+            <a href="/logout" class="flex flex-col items-center gap-1 hover:text-rose-600 transition text-slate-400">
+                <span class="text-xl">🚪</span>Keluar
+            </a>
         </nav>
     </div>
 
-    <!-- ===== JS Logic for API Sync ===== -->
-    <script>
+    <!-- Verification Modal -->
+    <div id="verifyModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm grid place-items-center px-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 shadow-2xl relative">
+            <button onclick="closeVerifyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">✖</button>
+            <h3 class="font-extrabold text-slate-800 text-lg mb-1">Verifikasi Penjemputan</h3>
+            <p class="text-xs text-slate-500 mb-5">Validasi kondisi sampah sebelum diangkut ke kendaraan.</p>
+
+            <form id="verifyForm" class="space-y-4">
+                <input type="hidden" id="verifyPickupId">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kondisi Fisik Sampah</label>
+                    <select id="verifyCondition" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition text-sm font-semibold text-slate-700 bg-slate-50">
+                        <option value="Sesuai">Sesuai Deskripsi</option>
+                        <option value="Tercampur">Tercampur Jenis Lain</option>
+                        <option value="Kotor/Basah">Kotor / Basah</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Kesesuaian Data</label>
+                    <div class="flex items-center gap-3">
+                        <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer">
+                            <input type="radio" name="verifyDataValid" value="true" checked class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                            Data Sesuai
+                        </label>
+                        <label class="flex items-center gap-2 text-sm font-semibold text-slate-700 cursor-pointer">
+                            <input type="radio" name="verifyDataValid" value="false" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                            Data Berbeda
+                        </label>
+                    </div>
+                </div>
+                <div class="pt-3 border-t border-slate-100">
+                    <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-100 hover:-translate-y-0.5 active:translate-y-0 transition">
+                        Verifikasi & Angkut
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
         const taskList = document.getElementById('task-list');
         const statPickups = document.getElementById('stat-pickups');
         const statWeight = document.getElementById('stat-weight');
+        
+        // Pass the name from Thymeleaf into JavaScript
+        const myCourierName = /*[[${name}]]*/ 'Budi Santoso';
 
         // Fetch assigned pickup tickets
         async function fetchCourierRoutes() {
@@ -107,11 +137,11 @@
                 const res = await fetch('/api/pickups');
                 const pickups = await res.json();
 
-                // Filter for "Budi S." assigned requests (and omit COMPLETED if desired, let's show all states to see progress)
-                const budiPickups = pickups.filter(p => p.courier === 'Budi S.' || p.courier === 'Budi Santoso');
+                // Filter requests assigned to the logged-in courier
+                const courierPickups = pickups.filter(p => p.courier === myCourierName || p.courier === 'Budi S.'); // Keep Budi S. for dummy data compatibility if needed
                 
                 // Count active pending tasks
-                const activeTasks = budiPickups.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');
+                const activeTasks = courierPickups.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');
                 statPickups.innerText = activeTasks.length;
 
                 // Total estimated weight for active tasks
@@ -122,7 +152,7 @@
                 // Render lists
                 taskList.innerHTML = '';
 
-                if (budiPickups.length === 0) {
+                if (courierPickups.length === 0) {
                     taskList.innerHTML = `
                         <div class="text-center py-10 text-slate-400 space-y-2">
                             <p class="text-4xl">📭</p>
@@ -132,7 +162,7 @@
                     return;
                 }
 
-                budiPickups.forEach((p, idx) => {
+                courierPickups.forEach((p, idx) => {
                     const statusConfig = getStatusConfig(p.status);
                     
                     // Conditionally render action buttons based on status
@@ -154,11 +184,11 @@
                     } else if (p.status === 'ON_ROUTE') {
                         actionHtml = `
                             <div class="mt-4 grid grid-cols-2 gap-2 border-t border-slate-50 pt-3">
-                                <button onclick="updateTicketStatus('${p.id}', 'PICKED_UP')" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition">
-                                    ✅ Diangkut (Selesai Pickup)
+                                <button onclick="openVerifyModal('${p.id}')" class="py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95 transition flex justify-center items-center gap-1.5">
+                                    <span>🔍</span> Verifikasi & Angkut
                                 </button>
-                                <button onclick="updateTicketStatus('${p.id}', 'CANCELLED')" class="py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 active:scale-95 transition">
-                                    ✖ Batal
+                                <button onclick="updateTicketStatus('${p.id}', 'CANCELLED')" class="py-2.5 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 active:scale-95 transition flex justify-center items-center gap-1.5">
+                                    <span>✖</span> Batal
                                 </button>
                             </div>
                         `;
@@ -227,6 +257,50 @@
                 alert("Kesalahan koneksi.");
             }
         }
+
+        // Modal Logic
+        const verifyModal = document.getElementById('verifyModal');
+        const verifyForm = document.getElementById('verifyForm');
+        const verifyPickupId = document.getElementById('verifyPickupId');
+        const verifyCondition = document.getElementById('verifyCondition');
+
+        function openVerifyModal(id) {
+            verifyPickupId.value = id;
+            verifyModal.classList.remove('hidden');
+        }
+
+        function closeVerifyModal() {
+            verifyModal.classList.add('hidden');
+            verifyForm.reset();
+        }
+
+        verifyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = verifyPickupId.value;
+            const dataValid = document.querySelector('input[name="verifyDataValid"]:checked').value === 'true';
+            const condition = verifyCondition.value;
+
+            try {
+                const res = await fetch(`/api/pickups/${id}/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ dataValid: dataValid, physicalCondition: condition })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    alert(`ID: ${id}\n\n${data.message}\nVerifikasi ID: ${data.verificationId}\n\nStatus diubah ke PICKED UP (Menunggu timbangan Admin).`);
+                    closeVerifyModal();
+                    fetchCourierRoutes();
+                } else {
+                    const err = await res.json();
+                    alert(err.message || "Gagal memverifikasi penjemputan.");
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Kesalahan koneksi.");
+            }
+        });
 
         function getStatusConfig(status) {
             return {

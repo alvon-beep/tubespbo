@@ -23,25 +23,7 @@
 
 <body class="min-h-screen bg-emerald-50/30 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
 
-    <!-- ===== Floating Role Switcher for Verification ===== -->
-    <div
-        class="fixed bottom-6 right-6 z-50 bg-emerald-900/95 backdrop-blur-md text-emerald-100 p-4 rounded-2xl shadow-2xl border border-emerald-700/50 max-w-xs transition-all hover:scale-105">
-        <p class="text-xs font-bold uppercase tracking-wider mb-2 text-emerald-400">⚡ Simulator Peran (Verify Flow)</p>
-        <div class="grid grid-cols-2 gap-1.5 text-[11px] font-semibold">
-            <a href="/"
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">🏠
-                Home</a>
-            <a href="/customer"
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-800 text-white border border-emerald-600/50 text-center">👩‍🦰
-                Customer</a>
-            <a href="/courier"
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">👷
-                Kurir</a>
-            <a href="/admin"
-                class="px-2.5 py-1.5 rounded-lg bg-emerald-950/50 hover:bg-emerald-800 hover:text-white transition text-center text-emerald-300">💼
-                Admin</a>
-        </div>
-    </div>
+    <!-- Floating Role Switcher Removed -->
 
     <!-- ===== Sidebar ===== -->
     <aside class="hidden lg:flex w-64 bg-white border-r border-emerald-100 flex-col p-6 shrink-0 shadow-sm">
@@ -67,6 +49,9 @@
             <a
                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">⚙️
                 Pengaturan</a>
+            <a href="/logout"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50/50 hover:text-rose-700 transition mt-4 border-t border-slate-100 pt-4">🚪
+                Keluar</a>
         </nav>
     </aside>
 
@@ -144,10 +129,12 @@
                             class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Catatan
-                            Kurir (opsional)</label>
-                        <input id="note" type="text" placeholder="Letakkan di depan pagar pagar..."
-                            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Catatan Kurir (opsional)</label>
+                        <input id="note" type="text" placeholder="Letakkan di depan pagar pagar..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Alamat Penjemputan</label>
+                        <input id="pickupAddress" type="text" placeholder="Masukkan alamat penjemputan lengkap..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-200/50 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" required />
                     </div>
                     <div class="md:col-span-2 pt-2">
                         <button type="submit"
@@ -307,6 +294,11 @@
                 profileAvatar.innerText = user.avatar;
                 greeting.innerText = `Selamat datang, ${user.name.split(' ')[0]} 👋`;
 
+                const pickupAddressInput = document.getElementById('pickupAddress');
+                if (pickupAddressInput && !pickupAddressInput.value) {
+                    pickupAddressInput.value = user.address;
+                }
+
                 // Format points
                 window.currentBalance = user.points;
                 walletBalance.innerText = window.currentBalance.toLocaleString() + " 🪙";
@@ -434,6 +426,7 @@
             const weight = parseFloat(document.getElementById('weight').value);
             const date = document.getElementById('date').value;
             const note = document.getElementById('note').value;
+            const pickupAddress = document.getElementById('pickupAddress').value;
 
             if (weight < 3) {
     alert("Estimasi berat minimal 3 kg!");
@@ -445,7 +438,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        wasteType, weight, date, note, username: 'sarah'
+                        wasteType, weight, date, note, address: pickupAddress, username: 'sarah'
                     })
                 });
 

@@ -1,13 +1,15 @@
 package com.ecotukar.controller;
 
 import com.ecotukar.model.User;
+import com.ecotukar.model.CustomerUser;
+import com.ecotukar.model.CourierUser;
 import com.ecotukar.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -32,19 +34,24 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String processRegister(@ModelAttribute User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+    public String processRegister(@RequestParam String name,
+                                  @RequestParam String email,
+                                  @RequestParam(required = false) String address,
+                                  @RequestParam(required = false) String role,
+                                  @RequestParam String username,
+                                  @RequestParam String password) {
+        if (userRepository.findByUsername(username) != null) {
             return "redirect:/register?error=Username sudah dipakai";
         }
         
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        
-        if (user.getRole() == null || user.getRole().isEmpty()) {
-            user.setRole("CUSTOMER");
-        }
-        if (user.getAvatar() == null || user.getAvatar().isEmpty()) {
-            user.setAvatar("👨‍💼");
-        }
+        User user = new CustomerUser();
+
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setName(name);
+        user.setEmail(email);
+        user.setAddress(address);
+        user.setAvatar("👨‍💼");
         
         String joined = LocalDate.now().format(DateTimeFormatter.ofPattern("MMMM yyyy"));
         user.setJoined(joined);
