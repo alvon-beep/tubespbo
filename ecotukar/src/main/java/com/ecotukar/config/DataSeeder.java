@@ -3,6 +3,7 @@ package com.ecotukar.config;
 import com.ecotukar.model.*;
 import com.ecotukar.repository.*;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -17,15 +18,18 @@ public class DataSeeder implements CommandLineRunner {
         private final PickupRequestRepository pickupRequestRepository;
         private final PickupVerificationRepository pickupVerificationRepository;
         private final WalletTransactionRepository walletTransactionRepository;
+        private final PasswordEncoder passwordEncoder;
 
         public DataSeeder(UserRepository userRepository,
                         PickupRequestRepository pickupRequestRepository,
                         PickupVerificationRepository pickupVerificationRepository,
-                        WalletTransactionRepository walletTransactionRepository) {
+                        WalletTransactionRepository walletTransactionRepository,
+                        PasswordEncoder passwordEncoder) {
                 this.userRepository = userRepository;
                 this.pickupRequestRepository = pickupRequestRepository;
                 this.pickupVerificationRepository = pickupVerificationRepository;
                 this.walletTransactionRepository = walletTransactionRepository;
+                this.passwordEncoder = passwordEncoder;
         }
 
         @Override
@@ -45,11 +49,12 @@ public class DataSeeder implements CommandLineRunner {
                 }
 
                 System.out.println("[Seeder] Menanam data users...");
+                String pw = passwordEncoder.encode("password"); // password semua user: password
 
                 // --- ADMIN ---
                 AdminUser admin = new AdminUser(
                                 "admin",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Admin",
                                 "admin@ecotukar.id",
                                 null,
@@ -62,7 +67,7 @@ public class DataSeeder implements CommandLineRunner {
                 // --- CUSTOMERS ---
                 CustomerUser customer1 = new CustomerUser(
                                 "customer1",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Customer Satu",
                                 "customer1@ecotukar.id",
                                 null,
@@ -74,7 +79,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer2 = new CustomerUser(
                                 "kurt",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Kurt Seto",
                                 "kurt@ecotukar.id",
                                 null,
@@ -86,7 +91,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer3 = new CustomerUser(
                                 "raynar",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Raynar Khalid Mahardika",
                                 "raynarkim@gmail.com",
                                 null,
@@ -98,7 +103,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer4 = new CustomerUser(
                                 "ganteng",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Raynar Ganteng",
                                 "ganteng@gmail.com",
                                 null,
@@ -110,7 +115,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer5 = new CustomerUser(
                                 "rifat",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Rifat Hanaf",
                                 "nflet@gmail.com",
                                 null,
@@ -122,7 +127,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer6 = new CustomerUser(
                                 "kevin",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Kevin@ecotukar.id",
                                 "Kevin@ecotukar.id",
                                 null,
@@ -134,7 +139,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CustomerUser customer7 = new CustomerUser(
                                 "fazul",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Fazul Alfat",
                                 "Fazul@ecotukar.com",
                                 null,
@@ -147,7 +152,7 @@ public class DataSeeder implements CommandLineRunner {
                 // --- COURIERS ---
                 CourierUser courier1 = new CourierUser(
                                 "ner",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "Baru Bergabung",
                                 "ner@ecotukar.id",
                                 null,
@@ -159,7 +164,7 @@ public class DataSeeder implements CommandLineRunner {
 
                 CourierUser courier2 = new CourierUser(
                                 "begin",
-                                "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy", // password: admin123
+                                pw,
                                 "begin",
                                 "begin@ecotukar.id",
                                 null,
