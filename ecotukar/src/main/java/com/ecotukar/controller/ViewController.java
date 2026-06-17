@@ -29,6 +29,18 @@ public class ViewController {
         return "customer";
     }
 
+    @GetMapping("/customer-ewallet")
+    public String customerEwallet(Model model, Principal principal) {
+        if (principal != null) {
+            User user = ecoTukarService.getUserByUsername(principal.getName());
+            model.addAttribute("username", principal.getName());
+            if(user != null) model.addAttribute("name", user.getName());
+        }
+        return "customer-ewallet";
+    }
+
+
+
     @GetMapping("/courier")
     public String courier(Model model, Principal principal) {
         if (principal != null) {

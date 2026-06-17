@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTukar — Riwayat Pickup</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-emerald-50/30 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="hidden lg:flex w-64 bg-white border-r border-emerald-100 flex-col p-6 shrink-0 shadow-sm">
+        <div class="flex items-center gap-2.5 mb-10">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 grid place-items-center text-white font-extrabold shadow-md">E</div>
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-emerald-700 to-green-700 bg-clip-text text-transparent">EcoTukar</span>
+        </div>
+        <nav class="space-y-2 text-sm font-semibold">
+            <a href="/customer"         class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🏠 Dashboard</a>
+            <a href="/customer-riwayat" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-50 text-emerald-700 transition">📦 Riwayat Pickup</a>
+            <a href="/customer-ewallet" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🪙 E-Wallet</a>
+            <a href="#"                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">🎁 Reward</a>
+            <a href="#"                 class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-500 hover:bg-emerald-50/50 hover:text-emerald-700 transition">⚙️ Pengaturan</a>
+            <a href="/logout"           class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-500 hover:bg-rose-50/50 hover:text-rose-700 transition mt-4 border-t border-slate-100 pt-4">🚪 Keluar</a>
+        </nav>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="flex-1 p-6 lg:p-10 space-y-8 max-w-6xl mx-auto w-full">
+
+        <!-- Header -->
+        <header class="border-b border-emerald-50 pb-5">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">📦 Riwayat Pickup</h1>
+            <p class="text-slate-500 text-sm font-medium mt-1">Lihat semua permintaan penjemputan sampah kamu beserta statusnya.</p>
+        </header>
+
+        <!-- ===== Summary Cards ===== -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-4" id="summary-cards">
+            <div class="bg-white rounded-2xl p-5 border border-emerald-100/70 shadow-sm">
+                <span class="text-2xl">📋</span>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-slate-900" id="stat-total">0</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Total Pickup</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-emerald-100/70 shadow-sm">
+                <span class="text-2xl">⏳</span>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-amber-600" id="stat-pending">0</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Menunggu</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-emerald-100/70 shadow-sm">
+                <span class="text-2xl">🚛</span>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-sky-600" id="stat-progress">0</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Dalam Proses</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-emerald-100/70 shadow-sm">
+                <span class="text-2xl">✅</span>
+                <div class="mt-3">
+                    <p class="text-2xl font-extrabold text-emerald-600" id="stat-completed">0</p>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Selesai</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== Filter ===== -->
+        <div class="flex flex-wrap gap-2" id="filter-bar">
+            <button onclick="setFilter(event, 'ALL')"       class="filter-btn active px-4 py-2 rounded-xl text-xs font-bold transition">Semua</button>
+            <button onclick="setFilter(event, 'PENDING')"    class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">⏳ Menunggu</button>
+            <button onclick="setFilter(event, 'ASSIGNED')"   class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">📌 Ditugaskan</button>
+            <button onclick="setFilter(event, 'ON_ROUTE')"   class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">🚛 Dalam Perjalanan</button>
+            <button onclick="setFilter(event, 'PICKED_UP')"  class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">📥 Diangkut</button>
+            <button onclick="setFilter(event, 'COMPLETED')"  class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">✅ Selesai</button>
+            <button onclick="setFilter(event, 'CANCELLED')"  class="filter-btn px-4 py-2 rounded-xl text-xs font-bold transition">❌ Batal</button>
+        </div>
+        <style>
+            .filter-btn { background: white; color: #64748b; border: 1px solid #e2e8f0; }
+            .filter-btn:hover { background: #f0fdf4; color: #047857; border-color: #a7f3d0; }
+            .filter-btn.active { background: #059669; color: white; border-color: #059669; }
+        </style>
+
+        <!-- ===== Pickup Table ===== -->
+        <section class="bg-white rounded-2xl border border-emerald-100/70 shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-slate-50 text-slate-500 uppercase tracking-widest text-[9px] font-extrabold border-b border-slate-100">
+                        <tr>
+                            <th class="px-5 py-3.5">ID</th>
+                            <th class="px-5 py-3.5">Jenis Sampah</th>
+                            <th class="px-5 py-3.5 text-center">Estimasi</th>
+                            <th class="px-5 py-3.5 text-center">Berat Riil</th>
+                            <th class="px-5 py-3.5">Tanggal</th>
+                            <th class="px-5 py-3.5">Kurir</th>
+                            <th class="px-5 py-3.5">Status</th>
+                            <th class="px-5 py-3.5">Alamat</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50" id="pickup-rows">
+                        <tr>
+                            <td colspan="8" class="px-5 py-12 text-center text-slate-400 text-sm">Memuat data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== JS ===== -->
+    <script>
+        let allPickups = [];
+        let currentFilter = 'ALL';
+
+        const statusMap = {
+            PENDING:   { label: 'Menunggu',          icon: '⏳', badge: 'bg-amber-100 text-amber-700 border border-amber-200/60' },
+            ASSIGNED:  { label: 'Ditugaskan',        icon: '📌', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200/60' },
+            ON_ROUTE:  { label: 'Dalam Perjalanan',  icon: '🚛', badge: 'bg-sky-100 text-sky-700 border border-sky-200/60' },
+            PICKED_UP: { label: 'Diangkut',          icon: '📥', badge: 'bg-teal-100 text-teal-700 border border-teal-200/60' },
+            COMPLETED: { label: 'Selesai',           icon: '✅', badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200/60' },
+            CANCELLED: { label: 'Batal',             icon: '❌', badge: 'bg-rose-100 text-rose-700 border border-rose-200/60' }
+        };
+
+        function getStatus(s) {
+            return statusMap[(s || '').toUpperCase()] || { label: s, icon: '❓', badge: 'bg-slate-100 text-slate-600' };
+        }
+
+        async function fetchPickups() {
+            try {
+                // Get current user profile
+                const profileRes = await fetch('/api/profile');
+                const user = await profileRes.json();
+                
+                const res = await fetch('/api/pickups');
+                const pickups = await res.json();
+
+                // Filter hanya milik user ini
+                allPickups = pickups.filter(p => p.username === user.username);
+
+                updateStats();
+                renderTable();
+            } catch (e) {
+                console.error('Gagal load pickups', e);
+                document.getElementById('pickup-rows').innerHTML =
+                    '<tr><td colspan="8" class="px-5 py-12 text-center text-rose-400 text-sm">Gagal memuat data.</td></tr>';
+            }
+        }
+
+        function updateStats() {
+            const total     = allPickups.length;
+            const pending   = allPickups.filter(p => p.status === 'PENDING').length;
+            const progress  = allPickups.filter(p => ['ASSIGNED', 'ON_ROUTE', 'PICKED_UP'].includes(p.status)).length;
+            const completed = allPickups.filter(p => p.status === 'COMPLETED').length;
+
+            document.getElementById('stat-total').innerText     = total;
+            document.getElementById('stat-pending').innerText   = pending;
+            document.getElementById('stat-progress').innerText  = progress;
+            document.getElementById('stat-completed').innerText = completed;
+        }
+
+        function renderTable() {
+            const rows = document.getElementById('pickup-rows');
+            const filtered = currentFilter === 'ALL'
+                ? allPickups
+                : allPickups.filter(p => p.status === currentFilter);
+
+            if (filtered.length === 0) {
+                rows.innerHTML = '<tr><td colspan="8" class="px-5 py-12 text-center text-slate-400 text-sm">Tidak ada data pickup untuk filter ini.</td></tr>';
+                return;
+            }
+
+            rows.innerHTML = '';
+            filtered.forEach(p => {
+                const st = getStatus(p.status);
+                const realWeight = p.actualWeight > 0 ? p.actualWeight.toFixed(1) + ' kg' : '<span class="text-slate-300">—</span>';
+                const courier = (p.courier && p.courier !== 'Belum') ? p.courier : '<span class="text-slate-300">Belum</span>';
+
+                rows.innerHTML += `
+                    <tr class="hover:bg-emerald-50/30 transition">
+                        <td class="px-5 py-4 font-mono text-xs text-slate-400 font-bold">${p.id}</td>
+                        <td class="px-5 py-4 text-sm font-bold text-slate-700">${p.wasteType}</td>
+                        <td class="px-5 py-4 text-center text-sm font-semibold text-slate-600">${p.estimatedWeight} kg</td>
+                        <td class="px-5 py-4 text-center text-sm font-semibold text-slate-600">${realWeight}</td>
+                        <td class="px-5 py-4 text-xs font-semibold text-slate-500">${p.date}</td>
+                        <td class="px-5 py-4 text-xs font-bold text-slate-600">${courier}</td>
+                        <td class="px-5 py-4">
+                            <span class="text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider ${st.badge}">
+                                ${st.icon} ${st.label}
+                            </span>
+                        </td>
+                        <td class="px-5 py-4 text-xs text-slate-500 max-w-[200px] truncate" title="${p.address}">${p.address}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function setFilter(e, filter) {
+            currentFilter = filter;
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            if (e && e.target) {
+                e.target.classList.add('active');
+            }
+            renderTable();
+        }
+
+        // Init
+        fetchPickups();
+        setInterval(fetchPickups, 5000);
+    </script>
+</body>
+</html>
