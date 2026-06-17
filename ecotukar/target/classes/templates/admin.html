@@ -91,15 +91,26 @@
                 <form id="conversionForm" class="grid md:grid-cols-2 gap-5">
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID Permintaan</label>
-                        <input id="convId" type="text" placeholder="REQ-1042" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                        <select id="convId" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
+                            <option value="">— Pilih ID Permintaan —</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Customer</label>
+                        <input id="convCustomerName" type="text" readonly placeholder="Otomatis terisi" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 font-semibold text-slate-500 focus:outline-none cursor-not-allowed" />
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Sampah</label>
-                        <input id="convType" type="text" placeholder="Kertas" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                        <select id="convType" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
+                            <option value="Plastik">♻️ Plastik — 50 koin/kg</option>
+                            <option value="Kardus">📦 Kardus — 80 koin/kg</option>
+                            <option value="Kertas">📄 Kertas — 60 koin/kg</option>
+                            <option value="Logam/Kaleng">🔩 Logam / Kaleng — 120 koin/kg</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Berat Riil (kg)</label>
-                        <input id="convActualWeight" type="number" min="3" step="0.1" value="3" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                        <input id="convActualWeight" type="number" min="5" step="0.1" value="5" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rate Reward (koin / kg)</label>
@@ -129,11 +140,22 @@
     <!-- ===== JS Logic for API Sync ===== -->
     <script>
         const countWeight = document.getElementById('count-weight');
-        const countWeight = document.getElementById('count-weight');
         const countCoins = document.getElementById('count-coins');
+
+        // =============================================
+        // HARGA PER JENIS SAMPAH (koin per kg)
+        // Ubah nilai di sini untuk mengatur harga tiap jenis
+        // =============================================
+        const WASTE_RATES = {
+            'Plastik':      50,
+            'Kardus':       80,
+            'Kertas':       60,
+            'Logam/Kaleng': 120
+        };
 
         const convForm = document.getElementById('conversionForm');
         const convId = document.getElementById('convId');
+        const convCustomerName = document.getElementById('convCustomerName');
         const convType = document.getElementById('convType');
         const convActualWeight = document.getElementById('convActualWeight');
         const convRate = document.getElementById('convRate');
@@ -145,6 +167,14 @@
         const descRate = document.getElementById('desc-rate');
 
         // Removed courierList
+
+        // Auto-update rate saat jenis sampah berubah
+        function updateRateFromType() {
+            const type = convType.value;
+            const rate = WASTE_RATES[type] || 50;
+            convRate.value = rate;
+            calculateLiveCoins();
+        }
 
         // Live point calculations
         function calculateLiveCoins() {
@@ -159,9 +189,64 @@
             descRate.innerText = rate;
         }
 
-        [convActualWeight, convRate, convType].forEach(el => {
-            el.addEventListener('input', calculateLiveCoins);
+        convType.addEventListener('change', updateRateFromType);
+        convActualWeight.addEventListener('input', calculateLiveCoins);
+
+        // Populate dropdown ID Permintaan dari /api/pickups
+        // Menyimpan map pickupId -> {customerName, wasteType, estimatedWeight}
+        const pickupMap = {};
+
+        async function loadPickupDropdown() {
+            try {
+                const res = await fetch('/api/pickups');
+                const pickups = await res.json();
+
+                // Simpan pilihan yang sudah dipilih sebelumnya
+                const currentVal = convId.value;
+
+                // Kosongkan & rebuild
+                convId.innerHTML = '<option value="">— Pilih ID Permintaan —</option>';
+                pickupMap; // reset
+                Object.keys(pickupMap).forEach(k => delete pickupMap[k]);
+
+                pickups.forEach(p => {
+                    if (p.status === 'COMPLETED' || p.status === 'CANCELLED') return; // skip selesai/batal
+                    pickupMap[p.id] = {
+                        customerName: p.customerName || p.username,
+                        wasteType: p.wasteType,
+                        estimatedWeight: p.estimatedWeight
+                    };
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.id} — ${p.customerName || p.username}`;
+                    convId.appendChild(opt);
+                });
+
+                // Restore pilihan sebelumnya jika masih ada
+                if (currentVal && pickupMap[currentVal]) {
+                    convId.value = currentVal;
+                }
+            } catch (e) {
+                console.error('Gagal load pickup dropdown', e);
+            }
+        }
+
+        // Auto-isi nama customer saat ID dipilih
+        convId.addEventListener('change', () => {
+            const data = pickupMap[convId.value];
+            if (data) {
+                convCustomerName.value = data.customerName;
+                // Auto-populate jenis sampah jika ada di WASTE_RATES
+                const matchedType = Object.keys(WASTE_RATES).find(k => k.toLowerCase() === (data.wasteType || '').toLowerCase()) || convType.value;
+                convType.value = matchedType;
+                updateRateFromType();
+            } else {
+                convCustomerName.value = '';
+            }
         });
+
+        // Init rate sesuai default dropdown
+        updateRateFromType();
 
         // Load Tickets and compute Stats
         async function fetchAdminData() {
@@ -196,11 +281,17 @@
 
         // Timbang Auto-Populate Click handler
         function autoPopulateWeighForm(id, type, weight) {
-            convId.value = id;
-            convType.value = type;
-            convActualWeight.value = Math.max(3.0, weight); // Enforce min 3.0
+            // Set dropdown ke ID yang sesuai
+            if (convId.querySelector(`option[value="${id}"]`)) {
+                convId.value = id;
+                convId.dispatchEvent(new Event('change'));
+            }
+            const matchedType = Object.keys(WASTE_RATES).find(k => k.toLowerCase() === type.toLowerCase()) || 'Plastik';
+            convType.value = matchedType;
+            convActualWeight.value = Math.max(5.0, weight); // Enforce min 5.0
             
-            convRate.value = 100;
+            // Set rate otomatis sesuai jenis
+            convRate.value = WASTE_RATES[matchedType] || 50;
 
             calculateLiveCoins();
 
@@ -217,12 +308,12 @@
             const ratePerKg = parseInt(convRate.value);
 
             if (!id) {
-                alert("Mohon isikan ID Permintaan.");
+                alert("Mohon pilih ID Permintaan dari dropdown.");
                 return;
             }
 
-            if (isNaN(actualWeight) || actualWeight < 3.0) {
-                alert("Berat riil sampah minimal 3 kg!");
+            if (isNaN(actualWeight) || actualWeight < 5.0) {
+                alert("Berat riil sampah minimal 5 kg!");
                 return;
             }
 
@@ -236,7 +327,7 @@
                 if (res.ok) {
                     alert(`Konversi Berhasil!\n\nSampah untuk ID ${id} telah divalidasi.\nKoin telah dikreditkan ke saldo Customer.`);
                     convForm.reset();
-                    convRate.value = 100;
+                    updateRateFromType(); // Reset rate sesuai dropdown default
                     calculateLiveCoins();
                     fetchAdminData();
                 } else {
@@ -262,9 +353,11 @@
 
         // Initial load
         fetchAdminData();
+        loadPickupDropdown();
         
         // Polling loop to sync states (every 4 seconds)
         setInterval(fetchAdminData, 4000);
+        setInterval(loadPickupDropdown, 8000); // Refresh dropdown lebih jarang
     </script>
 </body>
 </html>

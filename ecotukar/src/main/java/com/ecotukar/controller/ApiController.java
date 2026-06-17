@@ -57,8 +57,8 @@ public class ApiController {
         String customAddress = (String) body.get("address");
         String username = (principal != null) ? principal.getName() : (String) body.getOrDefault("username", "sarah");
         
-        if (weight < 3.0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estimasi berat minimal 3 kg!");
+        if (weight < 5.0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estimasi berat minimal 5 kg!");
         }
 
         User customer = service.getUserByUsername(username);
@@ -111,8 +111,8 @@ public class ApiController {
         double actualWeight = Double.parseDouble(body.get("actualWeight").toString());
         int ratePerKg = Integer.parseInt(body.get("ratePerKg").toString());
         
-        if (actualWeight < 3.0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Berat riil sampah minimal 3 kg!");
+        if (actualWeight < 5.0) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Berat riil sampah minimal 5 kg!");
         }
 
         service.convertCoins(id, actualWeight, ratePerKg);
@@ -153,6 +153,15 @@ public class ApiController {
     public List<Map<String, String>> getCouriers() {
         return userRepository.findAll().stream()
             .filter(u -> u instanceof CourierUser)
+            .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    // Get list of all customers from database
+    @GetMapping("/customers")
+    public List<Map<String, String>> getCustomers() {
+        return userRepository.findAll().stream()
+            .filter(u -> u instanceof com.ecotukar.model.CustomerUser)
             .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
             .collect(java.util.stream.Collectors.toList());
     }
