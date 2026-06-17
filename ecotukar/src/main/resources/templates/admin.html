@@ -4,21 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoTukar — Admin Control Panel</title>
-    <!-- Tailwind CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
-
-    <!-- Floating Role Switcher Removed -->
 
     <!-- ===== Sidebar ===== -->
     <aside class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
@@ -27,18 +21,18 @@
             <span class="font-extrabold text-lg tracking-tight text-white">EcoTukar Admin</span>
         </div>
         <nav class="space-y-2 text-sm font-semibold text-emerald-300">
-            <a href="/admin" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">📊 Dashboard</a>
-            <a href="/admin-jadwal" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal & Kurir</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
-            <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪 Keluar</a>
+            <a href="/admin"          class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">📊 Dashboard</a>
+            <a href="/admin-jadwal"   class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal &amp; Kurir</a>
+            <a href="/admin-konversi" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
+            <a href="#"               class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
+            <a href="#"               class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
+            <a href="/logout"         class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪 Keluar</a>
         </nav>
     </aside>
 
     <!-- ===== Main Dashboard ===== -->
     <main class="flex-1 p-6 lg:p-10 space-y-8 max-w-7xl mx-auto w-full">
-        
+
         <!-- Header -->
         <header class="border-b border-slate-200 pb-5">
             <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Operations Panel</h1>
@@ -77,287 +71,94 @@
             </div>
         </section>
 
+        <!-- ===== Welcome / Info Card ===== -->
+        <section class="grid lg:grid-cols-3 gap-6">
 
+            <!-- Welcome Card -->
+            <div class="lg:col-span-2 bg-gradient-to-br from-emerald-700 to-green-800 rounded-2xl p-8 text-white shadow-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/5 rounded-full"></div>
+                <div class="absolute -bottom-8 -left-8 w-36 h-36 bg-white/5 rounded-full"></div>
 
-        <!-- ===== Coin Conversion widget ===== -->
-        <section class="grid lg:grid-cols-3 gap-8">
-            
-            <!-- Left inputs card -->
-            <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
-                <div>
-                    <h3 class="font-extrabold text-slate-900 text-base">🪙 Sistem Konversi Koin</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Validasi berat sampah riil dan transfer reward koin langsung ke saldo E-Wallet customer.</p>
+                <div class="relative z-10">
+                    <p class="text-emerald-300 text-xs font-bold uppercase tracking-widest mb-2">Selamat Datang 👋</p>
+                    <h2 class="text-2xl md:text-3xl font-extrabold leading-snug">Halo, Admin EcoTukar!</h2>
+                    <p class="text-emerald-100/80 text-sm mt-3 leading-relaxed max-w-md">
+                        Pantau dan kelola seluruh operasional penjemputan sampah dari satu panel terpusat. Tugaskan kurir, validasi berat, dan distribusikan reward koin ke pelanggan dengan mudah.
+                    </p>
                 </div>
-                <form id="conversionForm" class="grid md:grid-cols-2 gap-5">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID Permintaan</label>
-                        <select id="convId" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
-                            <option value="">— Pilih ID Permintaan —</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Customer</label>
-                        <input id="convCustomerName" type="text" readonly placeholder="Otomatis terisi" class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 font-semibold text-slate-500 focus:outline-none cursor-not-allowed" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Sampah</label>
-                        <select id="convType" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
-                            <option value="Plastik">♻️ Plastik — 50 koin/kg</option>
-                            <option value="Kardus">📦 Kardus — 80 koin/kg</option>
-                            <option value="Kertas">📄 Kertas — 60 koin/kg</option>
-                            <option value="Logam/Kaleng">🔩 Logam / Kaleng — 120 koin/kg</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Berat Riil (kg)</label>
-                        <input id="convActualWeight" type="number" min="5" step="0.1" value="5" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rate Reward (koin / kg)</label>
-                        <input id="convRate" type="number" value="100" readonly class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 font-semibold text-slate-400 focus:outline-none cursor-not-allowed" />
-                    </div>
-                    <div class="md:col-span-2 pt-2">
-                        <button type="submit" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-100 hover:-translate-y-0.5 active:translate-y-0 transition">
-                            Simpan Konversi & Kirim Koin
-                        </button>
-                    </div>
-                </form>
+
+                <div class="relative z-10 flex flex-wrap gap-3">
+                    <a href="/admin-jadwal" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white text-sm font-semibold transition">
+                        🗓️ Kelola Jadwal &amp; Kurir
+                    </a>
+                    <a href="/admin-konversi" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold shadow-lg transition">
+                        🪙 Konversi Koin
+                    </a>
+                </div>
             </div>
 
-            <!-- Right calculation showcase card -->
-            <div class="bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl p-6 text-white shadow-xl flex flex-col justify-center border border-emerald-500/20 space-y-4">
-                <div>
-                    <p class="text-xs uppercase tracking-widest text-emerald-200 font-extrabold">Total Koin Dihasilkan</p>
-                    <p class="text-5xl font-extrabold mt-1 tracking-tight" id="showcase-coins">200 🪙</p>
+            <!-- Info Card -->
+            <div class="space-y-4">
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Panduan Cepat</p>
+                    <ul class="space-y-3 text-sm text-slate-600">
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-0.5 text-emerald-500 font-bold">①</span>
+                            <span>Pastikan kurir sudah ditugaskan sebelum konversi koin dilakukan.</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-0.5 text-emerald-500 font-bold">②</span>
+                            <span>Berat riil minimal <strong>5 kg</strong> per permintaan untuk konversi koin.</span>
+                        </li>
+                        <li class="flex items-start gap-2.5">
+                            <span class="mt-0.5 text-emerald-500 font-bold">③</span>
+                            <span>Klik <strong>🪙 Konversi Koin</strong> di sidebar untuk membuka halaman konversi.</span>
+                        </li>
+                    </ul>
                 </div>
-                <p class="text-xs font-medium text-emerald-100/90 leading-relaxed border-t border-emerald-500/30 pt-3" id="showcase-desc">
-                    Berdasarkan perhitungan berat riil <span class="font-extrabold" id="desc-weight">5.0</span> kg dari kategori <span class="font-extrabold" id="desc-type">Kertas</span> dengan tarif <span class="font-extrabold" id="desc-rate">40</span> koin/kg.
-                </p>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                    <p class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-2">💡 Info Rate</p>
+                    <div class="space-y-1.5 text-sm text-amber-800 font-medium">
+                        <div class="flex justify-between"><span>♻️ Plastik</span><span class="font-bold">50 koin/kg</span></div>
+                        <div class="flex justify-between"><span>📦 Kardus</span><span class="font-bold">80 koin/kg</span></div>
+                        <div class="flex justify-between"><span>📄 Kertas</span><span class="font-bold">60 koin/kg</span></div>
+                        <div class="flex justify-between"><span>🔩 Logam/Kaleng</span><span class="font-bold">120 koin/kg</span></div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <!-- ===== JS Logic for API Sync ===== -->
+    <!-- ===== JS ===== -->
     <script>
         const countWeight = document.getElementById('count-weight');
-        const countCoins = document.getElementById('count-coins');
+        const countCoins  = document.getElementById('count-coins');
 
-        // =============================================
-        // HARGA PER JENIS SAMPAH (koin per kg)
-        // Ubah nilai di sini untuk mengatur harga tiap jenis
-        // =============================================
-        const WASTE_RATES = {
-            'Plastik':      50,
-            'Kardus':       80,
-            'Kertas':       60,
-            'Logam/Kaleng': 120
-        };
-
-        const convForm = document.getElementById('conversionForm');
-        const convId = document.getElementById('convId');
-        const convCustomerName = document.getElementById('convCustomerName');
-        const convType = document.getElementById('convType');
-        const convActualWeight = document.getElementById('convActualWeight');
-        const convRate = document.getElementById('convRate');
-
-        const showcaseCoins = document.getElementById('showcase-coins');
-        const showcaseDesc = document.getElementById('showcase-desc');
-        const descWeight = document.getElementById('desc-weight');
-        const descType = document.getElementById('desc-type');
-        const descRate = document.getElementById('desc-rate');
-
-        // Removed courierList
-
-        // Auto-update rate saat jenis sampah berubah
-        function updateRateFromType() {
-            const type = convType.value;
-            const rate = WASTE_RATES[type] || 50;
-            convRate.value = rate;
-            calculateLiveCoins();
-        }
-
-        // Live point calculations
-        function calculateLiveCoins() {
-            const weight = parseFloat(convActualWeight.value) || 0;
-            const rate = parseInt(convRate.value) || 0;
-            const type = convType.value || 'Umum';
-            const coins = Math.round(weight * rate);
-
-            showcaseCoins.innerText = `${coins.toLocaleString()} 🪙`;
-            descWeight.innerText = weight.toFixed(1);
-            descType.innerText = type;
-            descRate.innerText = rate;
-        }
-
-        convType.addEventListener('change', updateRateFromType);
-        convActualWeight.addEventListener('input', calculateLiveCoins);
-
-        // Populate dropdown ID Permintaan dari /api/pickups
-        // Menyimpan map pickupId -> {customerName, wasteType, estimatedWeight}
-        const pickupMap = {};
-
-        async function loadPickupDropdown() {
-            try {
-                const res = await fetch('/api/pickups');
-                const pickups = await res.json();
-
-                // Simpan pilihan yang sudah dipilih sebelumnya
-                const currentVal = convId.value;
-
-                // Kosongkan & rebuild
-                convId.innerHTML = '<option value="">— Pilih ID Permintaan —</option>';
-                pickupMap; // reset
-                Object.keys(pickupMap).forEach(k => delete pickupMap[k]);
-
-                pickups.forEach(p => {
-                    if (p.status === 'COMPLETED' || p.status === 'CANCELLED') return; // skip selesai/batal
-                    pickupMap[p.id] = {
-                        customerName: p.customerName || p.username,
-                        wasteType: p.wasteType,
-                        estimatedWeight: p.estimatedWeight
-                    };
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.textContent = `${p.id} — ${p.customerName || p.username}`;
-                    convId.appendChild(opt);
-                });
-
-                // Restore pilihan sebelumnya jika masih ada
-                if (currentVal && pickupMap[currentVal]) {
-                    convId.value = currentVal;
-                }
-            } catch (e) {
-                console.error('Gagal load pickup dropdown', e);
-            }
-        }
-
-        // Auto-isi nama customer saat ID dipilih
-        convId.addEventListener('change', () => {
-            const data = pickupMap[convId.value];
-            if (data) {
-                convCustomerName.value = data.customerName;
-                // Auto-populate jenis sampah jika ada di WASTE_RATES
-                const matchedType = Object.keys(WASTE_RATES).find(k => k.toLowerCase() === (data.wasteType || '').toLowerCase()) || convType.value;
-                convType.value = matchedType;
-                updateRateFromType();
-            } else {
-                convCustomerName.value = '';
-            }
-        });
-
-        // Init rate sesuai default dropdown
-        updateRateFromType();
-
-        // Load Tickets and compute Stats
         async function fetchAdminData() {
             try {
-                const res = await fetch('/api/pickups');
+                const res     = await fetch('/api/pickups');
                 const pickups = await res.json();
 
-                // Sum completed weights
                 const completed = pickups.filter(p => p.status === 'COMPLETED');
                 let weightToday = 0;
                 completed.forEach(p => weightToday += p.actualWeight);
-
                 countWeight.innerText = `${(142 + weightToday).toFixed(1)} kg`;
 
-                // Sum points wallet histories dynamically
                 const resTrans = await fetch('/api/transactions');
-                const trans = await resTrans.json();
+                const trans    = await resTrans.json();
                 let pointsGiven = 0;
                 trans.forEach(t => {
                     if (t.delta.startsWith('+')) pointsGiven += parseInt(t.delta.replace('+', ''));
                 });
                 countCoins.innerText = (24800 + pointsGiven).toLocaleString();
-
-
-
             } catch (e) {
                 console.error("Error reading admin data", e);
             }
         }
 
-
-
-        // Timbang Auto-Populate Click handler
-        function autoPopulateWeighForm(id, type, weight) {
-            // Set dropdown ke ID yang sesuai
-            if (convId.querySelector(`option[value="${id}"]`)) {
-                convId.value = id;
-                convId.dispatchEvent(new Event('change'));
-            }
-            const matchedType = Object.keys(WASTE_RATES).find(k => k.toLowerCase() === type.toLowerCase()) || 'Plastik';
-            convType.value = matchedType;
-            convActualWeight.value = Math.max(5.0, weight); // Enforce min 5.0
-            
-            // Set rate otomatis sesuai jenis
-            convRate.value = WASTE_RATES[matchedType] || 50;
-
-            calculateLiveCoins();
-
-            // Scroll beautifully to the form
-            document.getElementById('conversionForm').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Submit Coin Conversion
-        convForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const id = convId.value.trim();
-            const actualWeight = parseFloat(convActualWeight.value);
-            const ratePerKg = parseInt(convRate.value);
-
-            if (!id) {
-                alert("Mohon pilih ID Permintaan dari dropdown.");
-                return;
-            }
-
-            if (isNaN(actualWeight) || actualWeight < 5.0) {
-                alert("Berat riil sampah minimal 5 kg!");
-                return;
-            }
-
-            try {
-                const res = await fetch(`/api/pickups/${id}/convert`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ actualWeight, ratePerKg })
-                });
-
-                if (res.ok) {
-                    alert(`Konversi Berhasil!\n\nSampah untuk ID ${id} telah divalidasi.\nKoin telah dikreditkan ke saldo Customer.`);
-                    convForm.reset();
-                    updateRateFromType(); // Reset rate sesuai dropdown default
-                    calculateLiveCoins();
-                    fetchAdminData();
-                } else {
-                    const data = await res.json();
-                    alert(data.message || "Gagal memproses konversi koin. Pastikan ID Permintaan valid.");
-                }
-            } catch(e) {
-                console.error(e);
-                alert("Kesalahan koneksi.");
-            }
-        });
-
-        function getStatusConfig(status) {
-            return {
-                PENDING:    { label: 'Menunggu', badge: 'bg-amber-100 text-amber-700 border border-amber-200/50' },
-                ASSIGNED:   { label: 'Ditugaskan', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' },
-                ON_ROUTE:   { label: 'Rute Jalan', badge: 'bg-sky-100 text-sky-700 border border-sky-200/50' },
-                PICKED_UP:  { label: 'Diangkut', badge: 'bg-teal-100 text-teal-700 border border-teal-200/50' },
-                COMPLETED:  { label: 'Selesai', badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200/50' },
-                CANCELLED:  { label: 'Batal', badge: 'bg-rose-100 text-rose-700 border border-rose-200/50' }
-            }[status.toUpperCase()] || { label: status, badge: 'bg-slate-100 text-slate-700' };
-        }
-
-        // Initial load
         fetchAdminData();
-        loadPickupDropdown();
-        
-        // Polling loop to sync states (every 4 seconds)
         setInterval(fetchAdminData, 4000);
-        setInterval(loadPickupDropdown, 8000); // Refresh dropdown lebih jarang
     </script>
 </body>
 </html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTukar — Konversi Koin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
+        <div class="flex items-center gap-2.5 mb-10">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center text-white font-extrabold shadow-md">E</div>
+            <span class="font-extrabold text-lg tracking-tight text-white">EcoTukar Admin</span>
+        </div>
+        <nav class="space-y-2 text-sm font-semibold text-emerald-300">
+            <a href="/admin"          class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📊 Dashboard</a>
+            <a href="/admin-jadwal"   class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal &amp; Kurir</a>
+            <a href="/admin-konversi" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">🪙 Konversi Koin</a>
+            <a href="#"               class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
+            <a href="#"               class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
+            <a href="/logout"         class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪 Keluar</a>
+        </nav>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="flex-1 p-6 lg:p-10 space-y-8 max-w-5xl mx-auto w-full">
+
+        <!-- Header -->
+        <header class="border-b border-slate-200 pb-5">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">🪙 Sistem Konversi Koin</h1>
+            <p class="text-slate-500 text-sm font-medium mt-1">Validasi berat sampah riil dan transfer reward koin langsung ke saldo E-Wallet customer.</p>
+        </header>
+
+        <!-- ===== Konversi Section ===== -->
+        <section class="grid lg:grid-cols-3 gap-8">
+
+            <!-- Form Card -->
+            <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+                <form id="conversionForm" class="grid md:grid-cols-2 gap-5">
+
+                    <!-- ID Permintaan -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">ID Permintaan</label>
+                        <select id="convId" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
+                            <option value="">— Pilih ID Permintaan —</option>
+                        </select>
+                    </div>
+
+                    <!-- Nama Customer (auto-fill) -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Customer</label>
+                        <input id="convCustomerName" type="text" readonly placeholder="Otomatis terisi saat memilih ID"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 font-semibold text-slate-500 focus:outline-none cursor-not-allowed" />
+                    </div>
+
+                    <!-- Jenis Sampah -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Jenis Sampah</label>
+                        <select id="convType" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50">
+                            <option value="Plastik">♻️ Plastik — 50 koin/kg</option>
+                            <option value="Kardus">📦 Kardus — 80 koin/kg</option>
+                            <option value="Kertas">📄 Kertas — 60 koin/kg</option>
+                            <option value="Logam/Kaleng">🔩 Logam / Kaleng — 120 koin/kg</option>
+                        </select>
+                    </div>
+
+                    <!-- Berat Riil -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Berat Riil (kg)</label>
+                        <input id="convActualWeight" type="number" min="5" step="0.1" value="5"
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" />
+                    </div>
+
+                    <!-- Rate Reward -->
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rate Reward (koin / kg)</label>
+                        <input id="convRate" type="number" value="50" readonly
+                               class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-100 font-semibold text-slate-400 focus:outline-none cursor-not-allowed" />
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="md:col-span-2 pt-2">
+                        <button type="submit"
+                                class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-lg shadow-emerald-100 hover:-translate-y-0.5 active:translate-y-0 transition">
+                            Simpan Konversi &amp; Kirim Koin
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Right: Live Preview + Info Rate -->
+            <div class="space-y-5">
+
+                <!-- Live Coin Preview -->
+                <div class="bg-gradient-to-br from-emerald-600 to-green-700 rounded-2xl p-6 text-white shadow-xl flex flex-col justify-center space-y-4">
+                    <div>
+                        <p class="text-xs uppercase tracking-widest text-emerald-200 font-extrabold">Total Koin Dihasilkan</p>
+                        <p class="text-5xl font-extrabold mt-1 tracking-tight" id="showcase-coins">250 🪙</p>
+                    </div>
+                    <p class="text-xs font-medium text-emerald-100/90 leading-relaxed border-t border-emerald-500/30 pt-3">
+                        Berdasarkan berat riil <span class="font-extrabold" id="desc-weight">5.0</span> kg
+                        dari kategori <span class="font-extrabold" id="desc-type">Plastik</span>
+                        dengan tarif <span class="font-extrabold" id="desc-rate">50</span> koin/kg.
+                    </p>
+                </div>
+
+                <!-- Info Rate Card -->
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                    <p class="text-xs font-bold text-amber-600 uppercase tracking-wider mb-3">💡 Tabel Rate Koin</p>
+                    <div class="space-y-2 text-sm text-amber-800 font-medium">
+                        <div class="flex justify-between"><span>♻️ Plastik</span><span class="font-bold">50 koin/kg</span></div>
+                        <div class="flex justify-between"><span>📦 Kardus</span><span class="font-bold">80 koin/kg</span></div>
+                        <div class="flex justify-between"><span>📄 Kertas</span><span class="font-bold">60 koin/kg</span></div>
+                        <div class="flex justify-between"><span>🔩 Logam/Kaleng</span><span class="font-bold">120 koin/kg</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ===== JS ===== -->
+    <script>
+        const WASTE_RATES = {
+            'Plastik':      50,
+            'Kardus':       80,
+            'Kertas':       60,
+            'Logam/Kaleng': 120
+        };
+
+        const convForm         = document.getElementById('conversionForm');
+        const convId           = document.getElementById('convId');
+        const convCustomerName = document.getElementById('convCustomerName');
+        const convType         = document.getElementById('convType');
+        const convActualWeight = document.getElementById('convActualWeight');
+        const convRate         = document.getElementById('convRate');
+        const showcaseCoins    = document.getElementById('showcase-coins');
+        const descWeight       = document.getElementById('desc-weight');
+        const descType         = document.getElementById('desc-type');
+        const descRate         = document.getElementById('desc-rate');
+
+        // Update rate saat jenis sampah berubah
+        function updateRateFromType() {
+            const rate = WASTE_RATES[convType.value] || 50;
+            convRate.value = rate;
+            calculateLiveCoins();
+        }
+
+        // Hitung live koin
+        function calculateLiveCoins() {
+            const weight = parseFloat(convActualWeight.value) || 0;
+            const rate   = parseInt(convRate.value) || 0;
+            const coins  = Math.round(weight * rate);
+            showcaseCoins.innerText = `${coins.toLocaleString()} 🪙`;
+            descWeight.innerText = weight.toFixed(1);
+            descType.innerText   = convType.value || 'Umum';
+            descRate.innerText   = rate;
+        }
+
+        convType.addEventListener('change', updateRateFromType);
+        convActualWeight.addEventListener('input', calculateLiveCoins);
+
+        // Populate dropdown ID Permintaan dari /api/pickups
+        const pickupMap = {};
+
+        async function loadPickupDropdown() {
+            try {
+                const res     = await fetch('/api/pickups');
+                const pickups = await res.json();
+                const currentVal = convId.value;
+
+                convId.innerHTML = '<option value="">— Pilih ID Permintaan —</option>';
+                Object.keys(pickupMap).forEach(k => delete pickupMap[k]);
+
+                pickups.forEach(p => {
+                    if (p.status === 'COMPLETED' || p.status === 'CANCELLED') return;
+                    pickupMap[p.id] = {
+                        customerName:    p.customerName || p.username,
+                        wasteType:       p.wasteType,
+                        estimatedWeight: p.estimatedWeight
+                    };
+                    const opt = document.createElement('option');
+                    opt.value       = p.id;
+                    opt.textContent = `${p.id} — ${p.customerName || p.username}`;
+                    convId.appendChild(opt);
+                });
+
+                if (currentVal && pickupMap[currentVal]) convId.value = currentVal;
+            } catch (e) {
+                console.error('Gagal load pickup dropdown', e);
+            }
+        }
+
+        // Auto-isi nama customer saat ID dipilih
+        convId.addEventListener('change', () => {
+            const data = pickupMap[convId.value];
+            if (data) {
+                convCustomerName.value = data.customerName;
+                const matchedType = Object.keys(WASTE_RATES).find(k => k.toLowerCase() === (data.wasteType || '').toLowerCase()) || convType.value;
+                convType.value = matchedType;
+                updateRateFromType();
+            } else {
+                convCustomerName.value = '';
+            }
+        });
+
+        // Submit Konversi
+        convForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id           = convId.value.trim();
+            const actualWeight = parseFloat(convActualWeight.value);
+            const ratePerKg    = parseInt(convRate.value);
+
+            if (!id) {
+                alert("Mohon pilih ID Permintaan dari dropdown.");
+                return;
+            }
+            if (isNaN(actualWeight) || actualWeight < 5.0) {
+                alert("Berat riil sampah minimal 5 kg!");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/pickups/${id}/convert`, {
+                    method:  'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body:    JSON.stringify({ actualWeight, ratePerKg })
+                });
+
+                if (res.ok) {
+                    alert(`Konversi Berhasil!\n\nSampah untuk ID ${id} telah divalidasi.\nKoin telah dikreditkan ke saldo Customer.`);
+                    convForm.reset();
+                    convCustomerName.value = '';
+                    updateRateFromType();
+                    calculateLiveCoins();
+                    loadPickupDropdown();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || "Gagal memproses konversi koin. Pastikan ID Permintaan valid.");
+                }
+            } catch(e) {
+                console.error(e);
+                alert("Kesalahan koneksi.");
+            }
+        });
+
+        // Init
+        updateRateFromType();
+        loadPickupDropdown();
+        setInterval(loadPickupDropdown, 8000);
+    </script>
+</body>
+</html>

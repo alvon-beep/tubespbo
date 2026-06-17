@@ -50,4 +50,10 @@ public class ViewController {
         if (principal != null) model.addAttribute("username", principal.getName());
         return "admin-jadwal";
     }
+
+    @GetMapping("/admin-konversi")
+    public String adminKonversi(Model model, Principal principal) {
+        if (principal != null) model.addAttribute("username", principal.getName());
+        return "admin-konversi";
+    }
 }
