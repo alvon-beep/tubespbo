@@ -119,11 +119,24 @@
     <!-- ===== JS Logic for API Sync ===== -->
     <script>
         const scheduleRows = document.getElementById('schedule-rows');
-        const courierList = ['Budi S.', 'Eko P.', 'Wawan H.', 'Rizky A.'];
+        let courierList = []; // Diambil dari database via API
+
+        // Load daftar kurir dari database
+        async function fetchCouriers() {
+            try {
+                const res = await fetch('/api/couriers');
+                const couriers = await res.json();
+                courierList = couriers.map(c => c.name);
+            } catch (e) {
+                console.error('Gagal load kurir:', e);
+                courierList = [];
+            }
+        }
 
         // Load Tickets and compute Stats
         async function fetchAdminData() {
             try {
+                await fetchCouriers(); // Selalu refresh kurir dari DB
                 const res = await fetch('/api/pickups');
                 const pickups = await res.json();
 
@@ -218,7 +231,7 @@
 
                 if (res.ok) {
                     alert(`Kurir ${name} (@${username}) berhasil ditambahkan!`);
-                    if (!courierList.includes(name)) courierList.push(name);
+                    await fetchCouriers(); // Refresh kurir dari DB
                     fetchAdminData();
                     closeCourierModal();
                 } else {

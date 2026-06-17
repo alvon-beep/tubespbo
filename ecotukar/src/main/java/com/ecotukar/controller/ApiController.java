@@ -148,6 +148,15 @@ public class ApiController {
         return service.getTransactions(); // Fallback for admin or if not found
     }
 
+    // Get list of all couriers from database
+    @GetMapping("/couriers")
+    public List<Map<String, String>> getCouriers() {
+        return userRepository.findAll().stream()
+            .filter(u -> u instanceof CourierUser)
+            .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
+            .collect(java.util.stream.Collectors.toList());
+    }
+
     // Admin register new courier
     @PostMapping("/admin/couriers")
     public Map<String, String> registerCourier(@RequestBody Map<String, String> body) {
