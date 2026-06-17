@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,63 +10,81 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
     </style>
 </head>
+
 <body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
 
     <!-- Floating Role Switcher Removed -->
 
     <!-- ===== Sidebar ===== -->
-    <aside class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
+    <aside
+        class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
         <div class="flex items-center gap-2.5 mb-10">
-            <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center text-white font-extrabold shadow-md">E</div>
+            <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center text-white font-extrabold shadow-md">E
+            </div>
             <span class="font-extrabold text-lg tracking-tight text-white">EcoTukar Admin</span>
         </div>
         <nav class="space-y-2 text-sm font-semibold text-emerald-300">
-            <a href="/admin" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📊 Dashboard</a>
-            <a href="/admin-jadwal" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">🗓️ Jadwal & Kurir</a>
-            <a href="/admin-konversi" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈 Laporan</a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
-            <a href="/logout" class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪 Keluar</a>
+            <a href="/admin"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📊
+                Dashboard</a>
+            <a href="/admin-jadwal"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">🗓️ Jadwal &
+                Kurir</a>
+            <a href="/admin-konversi"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙
+                Konversi Koin</a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📈
+                Laporan</a>
+            <a href="#"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥
+                Pengguna</a>
+            <a href="/logout"
+                class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪
+                Keluar</a>
         </nav>
     </aside>
 
     <!-- ===== Main Dashboard ===== -->
     <main class="flex-1 p-6 lg:p-10 space-y-8 max-w-7xl mx-auto w-full">
-        
+
         <!-- Header -->
         <header class="border-b border-slate-200 pb-5">
             <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">Admin Operations Panel</h1>
-            <p class="text-slate-500 text-sm font-medium mt-1">Kelola tiket penjemputan sampah, tugaskan kurir, dan konversi reward koin pelanggan.</p>
+            <p class="text-slate-500 text-sm font-medium mt-1">Kelola tiket penjemputan sampah, tugaskan kurir, dan
+                konversi reward koin pelanggan.</p>
         </header>
 
 
 
         <!-- ===== Schedule & Courier Table ===== -->
         <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-4.5 border-b border-slate-200 gap-3">
+            <div
+                class="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-4.5 border-b border-slate-200 gap-3">
                 <div>
-                    <h3 class="font-extrabold text-slate-900 text-base">🗓️ Manajemen Jadwal & Kurir</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Tugaskan kurir penjemputan sampah ke pesanan yang masuk.</p>
+                    <h3 class="font-extrabold text-slate-900 text-base">🗓️ Manajemen Jadwal &amp; Kurir</h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Tugaskan kurir penjemputan sampah ke pesanan yang masuk.
+                    </p>
                 </div>
                 <div class="flex gap-2">
-                    <button class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md shadow-emerald-100 hover:scale-[1.02] transition">
-                        + Jadwal Manual
-                    </button>
-                    <button onclick="openCourierModal()" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 hover:scale-[1.02] transition">
+                    <button onclick="openCourierModal()"
+                        class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-100 hover:scale-[1.02] transition">
                         + Tambah Kurir
                     </button>
                 </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left">
-                    <thead class="bg-slate-50 text-slate-500 uppercase tracking-widest text-[9px] font-extrabold border-b border-slate-100">
+                    <thead
+                        class="bg-slate-50 text-slate-500 uppercase tracking-widest text-[9px] font-extrabold border-b border-slate-100">
                         <tr>
                             <th class="px-6 py-3.5">ID</th>
                             <th class="px-6 py-3.5">Pengguna</th>
@@ -89,28 +108,40 @@
     </main>
 
     <!-- ===== Modal Tambah Kurir ===== -->
-    <div id="courierModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+    <div id="courierModal"
+        class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 border border-slate-200">
             <div class="flex justify-between items-center mb-5">
                 <h3 class="text-lg font-extrabold text-slate-900">👷 Tambah Kurir Baru</h3>
-                <button onclick="closeCourierModal()" class="text-slate-400 hover:text-rose-500 font-bold text-2xl leading-none">&times;</button>
+                <button onclick="closeCourierModal()"
+                    class="text-slate-400 hover:text-rose-500 font-bold text-2xl leading-none">&times;</button>
             </div>
             <form id="courierForm" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama Lengkap</label>
-                    <input type="text" id="modalCourierName" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" required>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nama
+                        Lengkap</label>
+                    <input type="text" id="modalCourierName"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50"
+                        required>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Username</label>
-                    <input type="text" id="modalCourierUser" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" required>
+                    <input type="text" id="modalCourierUser"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50"
+                        required>
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Password</label>
-                    <input type="password" id="modalCourierPass" class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50" required>
+                    <input type="password" id="modalCourierPass"
+                        class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 focus:outline-none transition font-semibold text-slate-700 bg-slate-50"
+                        required>
                 </div>
                 <div class="pt-2 flex gap-3">
-                    <button type="button" onclick="closeCourierModal()" class="flex-1 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition">Batal</button>
-                    <button type="submit" class="flex-1 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-100 transition">Daftarkan Kurir</button>
+                    <button type="button" onclick="closeCourierModal()"
+                        class="flex-1 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold transition">Batal</button>
+                    <button type="submit"
+                        class="flex-1 py-3.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-lg shadow-indigo-100 transition">Daftarkan
+                        Kurir</button>
                 </div>
             </form>
         </div>
@@ -144,7 +175,7 @@
                 scheduleRows.innerHTML = '';
                 pickups.forEach(p => {
                     const statusConfig = getStatusConfig(p.status);
-                    
+
                     // Render Courier dropdown
                     let courierDropdown = '';
                     if (p.status !== 'COMPLETED' && p.status !== 'CANCELLED') {
@@ -193,14 +224,14 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ courier: courierName })
                 });
-                
+
                 if (res.ok) {
                     alert(`ID: ${id}\n\nTugas penjemputan berhasil diserahkan ke ${courierName}.`);
                     fetchAdminData();
                 } else {
                     alert("Gagal merubah kurir.");
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
             }
         }
@@ -238,7 +269,7 @@
                     const data = await res.json();
                     alert("Gagal menambahkan kurir: " + data.message);
                 }
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 alert("Kesalahan koneksi.");
             }
@@ -248,20 +279,21 @@
 
         function getStatusConfig(status) {
             return {
-                PENDING:    { label: 'Menunggu', badge: 'bg-amber-100 text-amber-700 border border-amber-200/50' },
-                ASSIGNED:   { label: 'Ditugaskan', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' },
-                ON_ROUTE:   { label: 'Rute Jalan', badge: 'bg-sky-100 text-sky-700 border border-sky-200/50' },
-                PICKED_UP:  { label: 'Diangkut', badge: 'bg-teal-100 text-teal-700 border border-teal-200/50' },
-                COMPLETED:  { label: 'Selesai', badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200/50' },
-                CANCELLED:  { label: 'Batal', badge: 'bg-rose-100 text-rose-700 border border-rose-200/50' }
-            }[status.toUpperCase()] || { label: status, badge: 'bg-slate-100 text-slate-700' };
+                PENDING: { label: 'Menunggu', badge: 'bg-amber-100 text-amber-700 border border-amber-200/50' },
+                ASSIGNED: { label: 'Ditugaskan', badge: 'bg-indigo-100 text-indigo-700 border border-indigo-200/50' },
+                ON_ROUTE: { label: 'Rute Jalan', badge: 'bg-sky-100 text-sky-700 border border-sky-200/50' },
+                PICKED_UP: { label: 'Diangkut', badge: 'bg-teal-100 text-teal-700 border border-teal-200/50' },
+                COMPLETED: { label: 'Selesai', badge: 'bg-emerald-100 text-emerald-700 border border-emerald-200/50' },
+                CANCELLED: { label: 'Batal', badge: 'bg-rose-100 text-rose-700 border border-rose-200/50' }
+            }[(status || '').toUpperCase()] || { label: status, badge: 'bg-slate-100 text-slate-700' };
         }
 
         // Initial load
         fetchAdminData();
-        
+
         // Polling loop to sync states (every 4 seconds)
         setInterval(fetchAdminData, 4000);
     </script>
 </body>
+
 </html>

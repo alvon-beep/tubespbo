@@ -68,4 +68,16 @@ public class ViewController {
         if (principal != null) model.addAttribute("username", principal.getName());
         return "admin-konversi";
     }
+
+    @GetMapping("/admin-laporan")
+    public String adminLaporan(Model model, Principal principal) {
+        if (principal != null) model.addAttribute("username", principal.getName());
+        return "admin-laporan";
+    }
+
+    @GetMapping("/admin-pengguna")
+    public String adminPengguna(Model model, Principal principal) {
+        if (principal != null) model.addAttribute("username", principal.getName());
+        return "admin-pengguna";
+    }
 }

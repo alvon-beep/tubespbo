@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTukar — Laporan Transaksi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Animasi masuk untuk tabel baris */
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .row-animate { animation: fadeSlideIn 0.3s ease forwards; }
+
+        /* Badge status */
+        .badge-completed  { background: #d1fae5; color: #065f46; }
+        .badge-pending    { background: #fef3c7; color: #92400e; }
+        .badge-assigned   { background: #dbeafe; color: #1e40af; }
+        .badge-on_route   { background: #e0e7ff; color: #3730a3; }
+        .badge-cancelled  { background: #fee2e2; color: #991b1b; }
+        .badge-picked_up  { background: #ccfbf1; color: #115e59; }
+
+        /* Filter pill periode aktif */
+        .filter-pill.active {
+            background: #059669;
+            color: white;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.3);
+        }
+        .filter-pill {
+            transition: all 0.2s ease;
+        }
+        .filter-pill:hover:not(.active) {
+            background: #f0fdf4;
+            border-color: #059669;
+            color: #059669;
+        }
+
+        /* Status pill filter — warna unik per status */
+        .spill { transition: all 0.18s ease; cursor: pointer; }
+        .spill:hover { filter: brightness(0.93); }
+        .spill.s-all       { background:#1e293b; color:#fff; border-color:#1e293b; }
+        .spill.s-all.off   { background:#f8fafc; color:#64748b; border-color:#e2e8f0; }
+        .spill.s-pending   { background:#fef3c7; color:#92400e; border-color:#fde68a; }
+        .spill.s-pending.off   { background:#fafafa; color:#92400e; border-color:#fde68a; opacity:.65; }
+        .spill.s-assigned  { background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
+        .spill.s-assigned.off  { background:#fafafa; color:#1e40af; border-color:#bfdbfe; opacity:.65; }
+        .spill.s-on_route  { background:#e0e7ff; color:#3730a3; border-color:#c7d2fe; }
+        .spill.s-on_route.off  { background:#fafafa; color:#3730a3; border-color:#c7d2fe; opacity:.65; }
+        .spill.s-picked_up { background:#ccfbf1; color:#115e59; border-color:#99f6e4; }
+        .spill.s-picked_up.off { background:#fafafa; color:#115e59; border-color:#99f6e4; opacity:.65; }
+        .spill.s-completed { background:#d1fae5; color:#065f46; border-color:#6ee7b7; }
+        .spill.s-completed.off { background:#fafafa; color:#065f46; border-color:#6ee7b7; opacity:.65; }
+        .spill.s-cancelled { background:#fee2e2; color:#991b1b; border-color:#fca5a5; }
+        .spill.s-cancelled.off { background:#fafafa; color:#991b1b; border-color:#fca5a5; opacity:.65; }
+
+        /* Skeleton loader */
+        .skeleton {
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 6px;
+        }
+        @keyframes shimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position:  200% 0; }
+        }
+
+        /* Print style */
+        @media print {
+            aside, #printBtn, #filterBar, #statusBar { display: none !important; }
+            body { background: white !important; }
+            main { padding: 0 !important; max-width: 100% !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
+        <div class="flex items-center gap-2.5 mb-10">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center text-white font-extrabold shadow-md">E</div>
+            <span class="font-extrabold text-lg tracking-tight text-white">EcoTukar Admin</span>
+        </div>
+        <nav class="space-y-2 text-sm font-semibold text-emerald-300">
+            <a href="/admin"          class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">📊 Dashboard</a>
+            <a href="/admin-jadwal"   class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🗓️ Jadwal &amp; Kurir</a>
+            <a href="/admin-konversi" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">🪙 Konversi Koin</a>
+            <a href="/admin-laporan"  class="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-800 text-white transition">📈 Laporan</a>
+            <a href="/admin-pengguna" class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-emerald-800/40 hover:text-white transition">👥 Pengguna</a>
+            <a href="/logout"         class="flex items-center gap-3 px-4 py-3 rounded-xl text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition mt-4 border-t border-emerald-800 pt-4">🚪 Keluar</a>
+        </nav>
+    </aside>
+
+    <!-- ===== Main ===== -->
+    <main class="flex-1 p-6 lg:p-10 space-y-8 max-w-7xl mx-auto w-full">
+
+        <!-- Header -->
+        <header class="border-b border-slate-200 pb-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">📈 Laporan Transaksi</h1>
+                <p class="text-slate-500 text-sm font-medium mt-1">Rekap seluruh transaksi pickup &amp; konversi koin berdasarkan rentang waktu.</p>
+            </div>
+            <button id="printBtn"
+                    onclick="window.print()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-sm font-bold hover:bg-slate-700 transition shadow-sm">
+                🖨️ Cetak / Export PDF
+            </button>
+        </header>
+
+        <!-- ===== Filter Bar Periode ===== -->
+        <section id="filterBar" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0">Filter Periode</span>
+            <div class="flex flex-wrap gap-2">
+                <button id="pill-week"  class="filter-pill active px-5 py-2 rounded-xl border border-emerald-600 text-sm font-bold" onclick="setFilter('week')">📅 1 Minggu Terakhir</button>
+                <button id="pill-month" class="filter-pill px-5 py-2 rounded-xl border border-slate-300 text-sm font-bold text-slate-600" onclick="setFilter('month')">🗓️ 1 Bulan Terakhir</button>
+                <button id="pill-all"   class="filter-pill px-5 py-2 rounded-xl border border-slate-300 text-sm font-bold text-slate-600" onclick="setFilter('all')">📋 Semua Data</button>
+            </div>
+            <span id="periodLabel" class="ml-auto text-xs text-slate-400 font-medium shrink-0"></span>
+        </section>
+
+        <!-- ===== Filter Bar Status ===== -->
+        <section id="statusBar" class="bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <span class="text-xs font-bold text-slate-400 uppercase tracking-wider shrink-0">Filter Status</span>
+            <div class="flex flex-wrap gap-2">
+                <button id="spill-all"       class="spill s-all       text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('all')">Semua Status</button>
+                <button id="spill-pending"   class="spill s-pending   off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('PENDING')">⏳ Menunggu</button>
+                <button id="spill-assigned"  class="spill s-assigned  off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('ASSIGNED')">📋 Ditugaskan</button>
+                <button id="spill-on_route"  class="spill s-on_route  off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('ON_ROUTE')">🚚 Dalam Perjalanan</button>
+                <button id="spill-picked_up" class="spill s-picked_up off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('PICKED_UP')">📦 Diambil</button>
+                <button id="spill-completed" class="spill s-completed off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('COMPLETED')">✅ Selesai</button>
+                <button id="spill-cancelled" class="spill s-cancelled off text-[11px] font-bold px-3.5 py-1.5 rounded-xl border" onclick="setStatus('CANCELLED')">❌ Dibatalkan</button>
+            </div>
+            <span id="statusLabel" class="ml-auto text-xs text-slate-400 font-medium shrink-0 hidden sm:block"></span>
+        </section>
+
+        <!-- ===== Summary Cards ===== -->
+        <section class="grid grid-cols-2 md:grid-cols-4 gap-5" id="summaryCards">
+            <!-- Cards diisi JS -->
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+            <div class="skeleton h-28 rounded-2xl"></div>
+        </section>
+
+        <!-- ===== Laporan Pickup ===== -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="font-extrabold text-slate-800 text-base">♻️ Permintaan Pickup</h2>
+                <span id="pickupCount" class="text-xs bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full">— item</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            <th class="px-5 py-3">ID</th>
+                            <th class="px-5 py-3">Customer</th>
+                            <th class="px-5 py-3">Jenis Sampah</th>
+                            <th class="px-5 py-3">Berat Est.</th>
+                            <th class="px-5 py-3">Berat Riil</th>
+                            <th class="px-5 py-3">Tanggal</th>
+                            <th class="px-5 py-3">Kurir</th>
+                            <th class="px-5 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pickupTableBody">
+                        <tr>
+                            <td colspan="8" class="px-5 py-8 text-center text-slate-400 text-sm">
+                                <div class="inline-flex flex-col items-center gap-2">
+                                    <span class="text-3xl">⏳</span>
+                                    <span>Memuat data...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== Laporan Transaksi Koin ===== -->
+        <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                <h2 class="font-extrabold text-slate-800 text-base">🪙 Riwayat Transaksi Koin</h2>
+                <span id="transCount" class="text-xs bg-amber-100 text-amber-700 font-bold px-3 py-1 rounded-full">— item</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-slate-50 text-left text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                            <th class="px-5 py-3">#</th>
+                            <th class="px-5 py-3">Pengguna</th>
+                            <th class="px-5 py-3">Keterangan</th>
+                            <th class="px-5 py-3">Tanggal</th>
+                            <th class="px-5 py-3 text-right">Delta Koin</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transTableBody">
+                        <tr>
+                            <td colspan="5" class="px-5 py-8 text-center text-slate-400 text-sm">
+                                <div class="inline-flex flex-col items-center gap-2">
+                                    <span class="text-3xl">⏳</span>
+                                    <span>Memuat data...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== JS ===== -->
+    <script>
+        let allPickups = [];
+        let allTransactions = [];
+        let currentFilter = 'week';
+        let currentStatus = 'all';
+
+        // ─── Helpers ───────────────────────────────────────────────
+        function parseDateFlex(str) {
+            if (!str) return null;
+            // Format ISO: 2026-05-20
+            if (/^\d{4}-\d{2}-\d{2}$/.test(str)) return new Date(str + 'T00:00:00');
+            // Teks: "Hari Ini"
+            if (str.toLowerCase().includes('hari ini') || str.toLowerCase().includes('today')) return new Date();
+            // Coba parse biasa
+            const d = new Date(str);
+            return isNaN(d) ? null : d;
+        }
+
+        function getCutoffDate(filter) {
+            const now = new Date();
+            if (filter === 'week') {
+                const d = new Date(now);
+                d.setDate(d.getDate() - 7);
+                return d;
+            }
+            if (filter === 'month') {
+                const d = new Date(now);
+                d.setMonth(d.getMonth() - 1);
+                return d;
+            }
+            return null; // 'all'
+        }
+
+        function isInPeriod(dateStr, cutoff) {
+            if (!cutoff) return true;
+            const d = parseDateFlex(dateStr);
+            if (!d) return true; // Jika tidak bisa parse, ikutkan saja
+            return d >= cutoff;
+        }
+
+        function statusBadge(status) {
+            const key = (status || '').toLowerCase().replace(/[^a-z_]/g, '');
+            const labels = {
+                completed:  'SELESAI',
+                pending:    'MENUNGGU',
+                assigned:   'DITUGASKAN',
+                on_route:   'DALAM PERJALANAN',
+                cancelled:  'DIBATALKAN',
+                picked_up:  'DIAMBIL',
+            };
+            const label = labels[key] || status;
+            return `<span class="badge-${key} text-[10px] font-bold px-2.5 py-1 rounded-full whitespace-nowrap">${label}</span>`;
+        }
+
+        function deltaBadge(delta) {
+            if (!delta) return '<span class="text-slate-400">—</span>';
+            const isPositive = delta.startsWith('+');
+            const colorClass = isPositive
+                ? 'text-emerald-600 bg-emerald-50 border border-emerald-200'
+                : 'text-rose-600 bg-rose-50 border border-rose-200';
+            return `<span class="inline-block px-2.5 py-0.5 rounded-lg font-bold text-xs ${colorClass}">${delta}</span>`;
+        }
+
+        // ─── Render Pickup Table ────────────────────────────────────
+        function renderPickups(filter, statusFilter) {
+            const cutoff = getCutoffDate(filter);
+            let filtered = allPickups.filter(p => isInPeriod(p.date, cutoff));
+            if (statusFilter && statusFilter !== 'all') {
+                filtered = filtered.filter(p => (p.status || '').toUpperCase() === statusFilter);
+            }
+            const tbody = document.getElementById('pickupTableBody');
+            document.getElementById('pickupCount').textContent = `${filtered.length} item`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td colspan="8" class="px-5 py-10 text-center">
+                        <div class="flex flex-col items-center gap-2 text-slate-400">
+                            <span class="text-4xl">📭</span>
+                            <span class="text-sm font-medium">Tidak ada data pickup untuk filter ini</span>
+                        </div>
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((p, i) => `
+                <tr class="border-t border-slate-100 hover:bg-emerald-50/40 transition row-animate" style="animation-delay:${i * 30}ms">
+                    <td class="px-5 py-3.5 font-bold text-slate-700">${p.id || '—'}</td>
+                    <td class="px-5 py-3.5">
+                        <div class="font-semibold text-slate-800">${p.customerName || p.username || '—'}</div>
+                        <div class="text-[11px] text-slate-400">${p.username || ''}</div>
+                    </td>
+                    <td class="px-5 py-3.5 text-slate-600">${p.wasteType || '—'}</td>
+                    <td class="px-5 py-3.5 text-slate-600">${p.estimatedWeight ? p.estimatedWeight.toFixed(1) + ' kg' : '—'}</td>
+                    <td class="px-5 py-3.5 font-semibold ${p.actualWeight > 0 ? 'text-emerald-700' : 'text-slate-400'}">${p.actualWeight > 0 ? p.actualWeight.toFixed(1) + ' kg' : '—'}</td>
+                    <td class="px-5 py-3.5 text-slate-500 text-xs">${p.date || '—'}</td>
+                    <td class="px-5 py-3.5 text-slate-600">${p.courier && p.courier !== 'Belum' ? p.courier : '<span class="text-slate-400 italic text-xs">Belum ditugaskan</span>'}</td>
+                    <td class="px-5 py-3.5">${statusBadge(p.status)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ─── Render Transactions Table ──────────────────────────────
+        function renderTransactions(filter) {
+            const cutoff = getCutoffDate(filter);
+            const filtered = allTransactions.filter(t => isInPeriod(t.date, cutoff));
+            const tbody = document.getElementById('transTableBody');
+            document.getElementById('transCount').textContent = `${filtered.length} item`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr>
+                    <td colspan="5" class="px-5 py-10 text-center">
+                        <div class="flex flex-col items-center gap-2 text-slate-400">
+                            <span class="text-4xl">📭</span>
+                            <span class="text-sm font-medium">Tidak ada transaksi pada periode ini</span>
+                        </div>
+                    </td>
+                </tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((t, i) => `
+                <tr class="border-t border-slate-100 hover:bg-amber-50/30 transition row-animate" style="animation-delay:${i * 30}ms">
+                    <td class="px-5 py-3.5 text-slate-400 text-xs font-bold">#${t.id || i + 1}</td>
+                    <td class="px-5 py-3.5">
+                        <div class="font-semibold text-slate-800">${t.user?.name || t.user?.username || '—'}</div>
+                        <div class="text-[11px] text-slate-400">${t.user?.username || ''}</div>
+                    </td>
+                    <td class="px-5 py-3.5 text-slate-600 max-w-xs">${t.title || '—'}</td>
+                    <td class="px-5 py-3.5 text-slate-500 text-xs">${t.date || '—'}</td>
+                    <td class="px-5 py-3.5 text-right">${deltaBadge(t.delta)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // ─── Summary Cards ─────────────────────────────────────────
+        function renderSummary(filter, statusFilter) {
+            const cutoff = getCutoffDate(filter);
+            let filteredP = allPickups.filter(p => isInPeriod(p.date, cutoff));
+            if (statusFilter && statusFilter !== 'all') {
+                filteredP = filteredP.filter(p => (p.status || '').toUpperCase() === statusFilter);
+            }
+            const filteredT = allTransactions.filter(t => isInPeriod(t.date, cutoff));
+
+            const totalPickups    = filteredP.length;
+            const completedCount  = filteredP.filter(p => p.status === 'COMPLETED').length;
+            const totalBerat      = filteredP.reduce((s, p) => s + (p.actualWeight || 0), 0);
+            const totalKoin       = filteredT
+                .filter(t => t.delta && t.delta.startsWith('+'))
+                .reduce((s, t) => s + parseInt(t.delta.replace('+', '')) || 0, 0);
+
+            const container = document.getElementById('summaryCards');
+            container.innerHTML = `
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <span class="text-2xl">♻️</span>
+                    <div class="mt-4">
+                        <p class="text-2xl font-extrabold text-slate-950">${totalPickups}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Total Pickup${statusFilter !== 'all' ? ' (Filtered)' : ''}</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <span class="text-2xl">✅</span>
+                    <div class="mt-4">
+                        <p class="text-2xl font-extrabold text-emerald-700">${completedCount}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Pickup Selesai</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <span class="text-2xl">📦</span>
+                    <div class="mt-4">
+                        <p class="text-2xl font-extrabold text-slate-950">${totalBerat.toFixed(1)} kg</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Berat Riil Terkumpul</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-md transition">
+                    <span class="text-2xl">🪙</span>
+                    <div class="mt-4">
+                        <p class="text-2xl font-extrabold text-amber-600">${totalKoin.toLocaleString()}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Koin Terdistribusi</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ─── Period Label ───────────────────────────────────────────
+        function updatePeriodLabel(filter) {
+            const label = document.getElementById('periodLabel');
+            const now = new Date();
+            if (filter === 'week') {
+                const from = new Date(now); from.setDate(from.getDate() - 7);
+                label.textContent = `${from.toLocaleDateString('id-ID')} — ${now.toLocaleDateString('id-ID')}`;
+            } else if (filter === 'month') {
+                const from = new Date(now); from.setMonth(from.getMonth() - 1);
+                label.textContent = `${from.toLocaleDateString('id-ID')} — ${now.toLocaleDateString('id-ID')}`;
+            } else {
+                label.textContent = 'Semua waktu';
+            }
+        }
+
+        // ─── Filter Periode Toggle ──────────────────────────────────
+        function setFilter(filter) {
+            currentFilter = filter;
+            ['week', 'month', 'all'].forEach(f => {
+                const pill = document.getElementById(`pill-${f}`);
+                if (f === filter) {
+                    pill.classList.add('active');
+                    pill.classList.remove('border-slate-300', 'text-slate-600');
+                    pill.classList.add('border-emerald-600');
+                } else {
+                    pill.classList.remove('active');
+                    pill.classList.remove('border-emerald-600', 'text-white');
+                    pill.classList.add('border-slate-300', 'text-slate-600');
+                }
+            });
+            updatePeriodLabel(filter);
+            renderSummary(filter, currentStatus);
+            renderPickups(filter, currentStatus);
+            renderTransactions(filter);
+        }
+
+        // ─── Filter Status Toggle ───────────────────────────────────
+        const STATUS_KEYS = ['all', 'pending', 'assigned', 'on_route', 'picked_up', 'completed', 'cancelled'];
+        const STATUS_LABELS = {
+            all:       'Semua Status',
+            pending:   'Menunggu',
+            assigned:  'Ditugaskan',
+            on_route:  'Dalam Perjalanan',
+            picked_up: 'Diambil',
+            completed: 'Selesai',
+            cancelled: 'Dibatalkan',
+        };
+
+        function setStatus(status) {
+            // status: 'all' | 'PENDING' | 'ASSIGNED' | ...
+            currentStatus = status;
+            const keyLower = status.toLowerCase();
+
+            STATUS_KEYS.forEach(k => {
+                const btn = document.getElementById(`spill-${k}`);
+                if (!btn) return;
+                if (k === keyLower) {
+                    btn.classList.remove('off');
+                } else {
+                    btn.classList.add('off');
+                }
+            });
+
+            // Update label
+            const lbl = document.getElementById('statusLabel');
+            lbl.textContent = status === 'all' ? '' : `● ${STATUS_LABELS[keyLower] || status}`;
+
+            renderSummary(currentFilter, currentStatus);
+            renderPickups(currentFilter, currentStatus);
+        }
+
+        // ─── Fetch Data ─────────────────────────────────────────────
+        async function loadData() {
+            try {
+                const [pickupRes, transRes] = await Promise.all([
+                    fetch('/api/pickups'),
+                    fetch('/api/admin/transactions')
+                ]);
+                allPickups       = await pickupRes.json();
+                allTransactions  = await transRes.json();
+            } catch (e) {
+                console.error('Gagal memuat data laporan', e);
+                allPickups      = [];
+                allTransactions = [];
+            }
+            setFilter(currentFilter);
+            setStatus(currentStatus);
+        }
+
+        // ─── Init ───────────────────────────────────────────────────
+        updatePeriodLabel('week');
+        loadData();
+        // Auto-refresh setiap 30 detik
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>

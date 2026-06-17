@@ -195,4 +195,99 @@ public class ApiController {
         
         return Map.of("message", "Kurir berhasil didaftarkan", "status", "success");
     }
+
+    // Get ALL transactions for admin report page
+    @GetMapping("/admin/transactions")
+    public List<WalletTransaction> getAllTransactionsForAdmin() {
+        return service.getTransactions();
+    }
+
+    // ─── Admin: User Management ───────────────────────────────────────────────
+
+    // Get ALL users for admin user management page
+    @GetMapping("/admin/users")
+    public List<Map<String, Object>> getAllUsers() {
+        return userRepository.findAll().stream().map(u -> {
+            Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("username",       u.getUsername());
+            m.put("name",           u.getName());
+            m.put("email",          u.getEmail());
+            m.put("address",        u.getAddress());
+            m.put("role",           u.getRole());
+            m.put("avatar",         u.getAvatar());
+            m.put("joined",         u.getJoined());
+            m.put("points",         u.getPoints());
+            m.put("ewalletBalance", u.getEwalletBalance());
+            return m;
+        }).collect(java.util.stream.Collectors.toList());
+    }
+
+    // Update a user's data (admin)
+    @PutMapping("/admin/users/{username}")
+    public Map<String, String> updateUser(@PathVariable String username, @RequestBody Map<String, Object> body) {
+        com.ecotukar.model.User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User tidak ditemukan");
+        }
+
+        if (body.containsKey("name"))           user.setName((String) body.get("name"));
+        if (body.containsKey("email"))          user.setEmail((String) body.get("email"));
+        if (body.containsKey("address"))        user.setAddress((String) body.get("address"));
+        if (body.containsKey("points"))         user.setPoints(Integer.parseInt(body.get("points").toString()));
+        if (body.containsKey("ewalletBalance")) user.setEwalletBalance(Integer.parseInt(body.get("ewalletBalance").toString()));
+        if (body.containsKey("password")) {
+            String newPw = (String) body.get("password");
+            if (newPw != null && !newPw.isBlank()) {
+                user.setPassword(passwordEncoder.encode(newPw));
+            }
+        }
+
+        userRepository.save(user);
+        return Map.of("message", "User berhasil diperbarui", "status", "success");
+    }
+
+    // Delete a user (admin)
+    @DeleteMapping("/admin/users/{username}")
+    public Map<String, String> deleteUser(@PathVariable String username) {
+        com.ecotukar.model.User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User tidak ditemukan");
+        }
+        if ("ADMIN".equals(user.getRole())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Akun admin tidak boleh dihapus");
+        }
+        userRepository.delete(user);
+        return Map.of("message", "User berhasil dihapus", "status", "success");
+    }
+
+    // Add new customer (admin)
+    @PostMapping("/admin/customers")
+    public Map<String, String> registerCustomer(@RequestBody Map<String, String> body) {
+        String username = body.get("username");
+        String name     = body.get("name");
+        String password = body.get("password");
+        String email    = body.get("email");
+        String address  = body.getOrDefault("address", "");
+
+        if (username == null || name == null || password == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data tidak lengkap");
+        }
+        if (userRepository.findByUsername(username) != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username sudah dipakai");
+        }
+
+        com.ecotukar.model.CustomerUser customer = new com.ecotukar.model.CustomerUser();
+        customer.setUsername(username);
+        customer.setName(name);
+        customer.setPassword(passwordEncoder.encode(password));
+        customer.setEmail(email != null ? email : username + "@ecotukar.com");
+        customer.setAvatar("👤");
+        customer.setAddress(address);
+        customer.setJoined(java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("MMMM yyyy")));
+        customer.setPoints(0);
+        customer.setEwalletBalance(0);
+
+        userRepository.save(customer);
+        return Map.of("message", "Customer berhasil didaftarkan", "status", "success");
+    }
 }
