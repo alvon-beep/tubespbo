@@ -41,6 +41,16 @@ public class ViewController {
 
 
 
+    @GetMapping("/customer-riwayat")
+    public String customerRiwayat(Model model, Principal principal) {
+        if (principal != null) {
+            User user = ecoTukarService.getUserByUsername(principal.getName());
+            model.addAttribute("username", principal.getName());
+            if(user != null) model.addAttribute("name", user.getName());
+        }
+        return "customer-riwayat";
+    }
+
     @GetMapping("/courier")
     public String courier(Model model, Principal principal) {
         if (principal != null) {
@@ -49,6 +59,16 @@ public class ViewController {
             if(user != null) model.addAttribute("name", user.getName());
         }
         return "courier";
+    }
+
+    @GetMapping("/courier-riwayat")
+    public String courierRiwayat(Model model, Principal principal) {
+        if (principal != null) {
+            User user = ecoTukarService.getUserByUsername(principal.getName());
+            model.addAttribute("username", principal.getName());
+            if(user != null) model.addAttribute("name", user.getName());
+        }
+        return "courier-riwayat";
     }
 
     @GetMapping("/admin")

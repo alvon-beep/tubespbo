@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTukar — Riwayat Kurir</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen bg-emerald-50/40 font-sans text-slate-800 antialiased">
+
+    <!-- Mobile-First Container -->
+    <div class="max-w-md mx-auto pb-28 min-h-screen bg-slate-50 shadow-2xl flex flex-col relative border-x border-emerald-100">
+        
+        <!-- ===== Mobile Header ===== -->
+        <header class="bg-gradient-to-br from-emerald-600 to-green-700 text-white p-6 rounded-b-[2.5rem] shadow-lg space-y-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-white/20 border border-white/10 grid place-items-center text-2xl shadow-inner">👷</div>
+                    <div>
+                        <p class="text-[10px] uppercase font-bold tracking-wider text-emerald-100">Riwayat Tugas,</p>
+                        <p class="font-extrabold text-base" id="courier-name" th:text="${name} ?: 'Budi Santoso'">Budi Santoso</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 text-center">
+                <div class="bg-white/10 rounded-2xl py-3 border border-white/5 backdrop-blur-md">
+                    <p class="text-2xl font-extrabold" id="stat-completed">0</p>
+                    <p class="text-[9px] uppercase font-bold text-emerald-100 tracking-wider mt-0.5">Selesai</p>
+                </div>
+                <div class="bg-white/10 rounded-2xl py-3 border border-white/5 backdrop-blur-md">
+                    <p class="text-2xl font-extrabold" id="stat-cancelled">0</p>
+                    <p class="text-[9px] uppercase font-bold text-emerald-100 tracking-wider mt-0.5">Dibatalkan</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== History List ===== -->
+        <main class="flex-1 p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="font-extrabold text-slate-800 tracking-tight">📜 Riwayat Penjemputan</h2>
+            </div>
+
+            <!-- Task List container -->
+            <div class="space-y-4" id="task-list">
+                <!-- Loaded dynamically -->
+                <div class="text-center py-10 text-slate-400">Memuat data...</div>
+            </div>
+        </main>
+
+        <!-- ===== Mobile Bottom Navigation Bar ===== -->
+        <nav class="absolute bottom-0 inset-x-0 bg-white border-t border-slate-100 grid grid-cols-3 py-3 text-[10px] font-bold text-slate-400">
+            <a href="/courier" class="flex flex-col items-center gap-1 hover:text-emerald-600 transition">
+                <span class="text-xl">🏠</span>Beranda
+            </a>
+            <a href="/courier-riwayat" class="flex flex-col items-center gap-1 text-emerald-600">
+                <span class="text-xl">📜</span>Riwayat
+            </a>
+            <a href="/logout" class="flex flex-col items-center gap-1 hover:text-rose-600 transition text-slate-400">
+                <span class="text-xl">🚪</span>Keluar
+            </a>
+        </nav>
+    </div>
+
+    <script th:inline="javascript">
+        const taskList = document.getElementById('task-list');
+        const statCompleted = document.getElementById('stat-completed');
+        const statCancelled = document.getElementById('stat-cancelled');
+        
+        // Pass the name from Thymeleaf into JavaScript
+        const myCourierName = /*[[${name}]]*/ 'Budi Santoso';
+
+        async function fetchCourierHistory() {
+            try {
+                const res = await fetch('/api/pickups');
+                const pickups = await res.json();
+
+                // Filter requests assigned to the logged-in courier
+                const courierPickups = pickups.filter(p => p.courier === myCourierName || p.courier === 'Budi S.');
+                
+                // History consists of COMPLETED or CANCELLED tasks
+                const historyTasks = courierPickups.filter(p => p.status === 'COMPLETED' || p.status === 'CANCELLED');
+                
+                // Sort to show newest first (basic reverse)
+                historyTasks.reverse();
+
+                statCompleted.innerText = historyTasks.filter(p => p.status === 'COMPLETED').length;
+                statCancelled.innerText = historyTasks.filter(p => p.status === 'CANCELLED').length;
+
+                taskList.innerHTML = '';
+
+                if (historyTasks.length === 0) {
+                    taskList.innerHTML = `
+                        <div class="text-center py-10 text-slate-400 space-y-2">
+                            <p class="text-4xl">📭</p>
+                            <p class="text-sm font-semibold">Belum ada riwayat tugas</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                historyTasks.forEach((p, idx) => {
+                    const isCompleted = p.status === 'COMPLETED';
+                    const badgeClass = isCompleted 
+                        ? 'bg-emerald-100 text-emerald-700 border-emerald-200/50' 
+                        : 'bg-rose-100 text-rose-700 border-rose-200/50';
+                    const label = isCompleted ? 'SELESAI' : 'BATAL';
+                    const icon = isCompleted ? '✅' : '✖';
+
+                    taskList.innerHTML += `
+                        <article class="bg-white rounded-2xl p-4.5 border border-slate-100 shadow-sm space-y-3.5 hover:shadow-md transition">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 font-extrabold grid place-items-center text-xs">
+                                    ${icon}
+                                </div>
+                                <div class="flex-1 space-y-1">
+                                    <div class="flex items-center justify-between">
+                                        <p class="font-extrabold text-sm text-slate-800">${p.customerName}</p>
+                                        <span class="text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider border ${badgeClass}">
+                                            ${label}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-500 font-semibold">📍 ${p.address}</p>
+                                    <p class="text-[10px] text-slate-400 font-bold pt-1">${p.date} • ${p.time}</p>
+                                    <div class="flex flex-wrap gap-1.5 pt-1 text-[10px] font-bold">
+                                        <span class="px-2 py-1 rounded-lg bg-slate-50 text-slate-600 border border-slate-100">${p.wasteType} • ${p.actualWeight > 0 ? p.actualWeight : p.estimatedWeight} kg</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                });
+
+            } catch (e) {
+                console.error("Error loading courier history", e);
+                taskList.innerHTML = '<div class="text-center py-10 text-rose-500">Gagal memuat data riwayat.</div>';
+            }
+        }
+
+        fetchCourierHistory();
+    </script>
+</body>
+</html>
