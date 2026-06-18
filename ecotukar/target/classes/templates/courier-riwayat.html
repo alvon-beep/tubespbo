@@ -82,7 +82,7 @@
                 const pickups = await res.json();
 
                 // Filter requests assigned to the logged-in courier
-                const courierPickups = pickups.filter(p => p.courier === myCourierName || p.courier === 'Budi S.');
+                const courierPickups = pickups.filter(p => p.courier === myCourierName);
                 
                 // History consists of COMPLETED or CANCELLED tasks
                 const historyTasks = courierPickups.filter(p => p.status === 'COMPLETED' || p.status === 'CANCELLED');

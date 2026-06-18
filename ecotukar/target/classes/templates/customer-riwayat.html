@@ -82,7 +82,7 @@
                     if (p.status === 'ON_PROCESS') statusClass = 'bg-blue-100 text-blue-700 border border-blue-200';
                     if (p.status === 'CANCELED') statusClass = 'bg-rose-100 text-rose-700 border border-rose-200';
                     
-                    const courierName = (p.assignedCourier && p.assignedCourier !== 'Belum') ? p.assignedCourier : '-';
+                    const courierName = (p.courier && p.courier !== 'Belum') ? p.courier : '-';
 
                     tbody.innerHTML += `
                         <tr class="border-b border-slate-100 hover:bg-emerald-50/30 transition">

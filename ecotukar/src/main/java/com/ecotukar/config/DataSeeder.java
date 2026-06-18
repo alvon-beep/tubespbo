@@ -149,30 +149,115 @@ public class DataSeeder implements CommandLineRunner {
                                 0);
                 userRepository.save(customer7);
 
+                // --- CUSTOMERS (dari data pickup EcoTukarService.init()) ---
+                CustomerUser sarah = new CustomerUser(
+                                "sarah",
+                                pw,
+                                "Sarah Putri",
+                                "sarah@ecotukar.id",
+                                null,
+                                "Jl. Melati No. 21",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(sarah);
+
+                CustomerUser andi = new CustomerUser(
+                                "andi",
+                                pw,
+                                "Andi Wijaya",
+                                "andi@ecotukar.id",
+                                null,
+                                "Jl. Mawar No. 5",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(andi);
+
+                CustomerUser rina = new CustomerUser(
+                                "rina",
+                                pw,
+                                "Rina Lestari",
+                                "rina@ecotukar.id",
+                                null,
+                                "Jl. Anggrek No. 12",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(rina);
+
+                CustomerUser doni = new CustomerUser(
+                                "doni",
+                                pw,
+                                "Doni Pratama",
+                                "doni@ecotukar.id",
+                                null,
+                                "Jl. Kenanga No. 7",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(doni);
+
+                CustomerUser maya = new CustomerUser(
+                                "maya",
+                                pw,
+                                "Maya Anggun",
+                                "maya@ecotukar.id",
+                                null,
+                                "Jl. Cempaka No. 9",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(maya);
+
                 // --- COURIERS ---
                 CourierUser courier1 = new CourierUser(
+                                "budi",
+                                pw,
+                                "Budi Santoso",
+                                "budi@ecotukar.id",
+                                null,
+                                "Hub Bandung",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(courier1);
+
+                CourierUser courier2 = new CourierUser(
+                                "eko",
+                                pw,
+                                "Eko Pratama",
+                                "eko@ecotukar.id",
+                                null,
+                                "Hub Jakarta",
+                                "May 2026",
+                                0,
+                                0);
+                userRepository.save(courier2);
+
+                CourierUser courier3 = new CourierUser(
                                 "ner",
                                 pw,
-                                "Baru Bergabung",
+                                "Ner Kurniawan",
                                 "ner@ecotukar.id",
                                 null,
                                 "Hub Bandung",
                                 "June 2026",
                                 0,
                                 0);
-                userRepository.save(courier1);
+                userRepository.save(courier3);
 
-                CourierUser courier2 = new CourierUser(
+                CourierUser courier4 = new CourierUser(
                                 "begin",
                                 pw,
-                                "begin",
+                                "Begin Saputra",
                                 "begin@ecotukar.id",
                                 null,
                                 "Hub Bandung",
                                 "June 2026",
                                 0,
                                 0);
-                userRepository.save(courier2);
+                userRepository.save(courier4);
 
                 System.out.println("[Seeder] Users berhasil ditanam: " + userRepository.count() + " user.");
         }
@@ -189,37 +274,62 @@ public class DataSeeder implements CommandLineRunner {
                 System.out.println("[Seeder] Menanam data pickup requests...");
 
                 PickupRequest req1 = new PickupRequest(
-                                "REQ-0001", "customer1", "Customer Satu",
-                                "Jl. Merdeka No. 1, Bandung", "Plastik",
-                                2.5, "2026-06-01", "Tolong diambil pagi", "Belum", "PENDING", "09:00");
+                                "REQ-0001", "sarah", "Sarah Putri",
+                                "Jl. Melati No. 21", "Plastik",
+                                3.0, "2026-05-20", "Letakkan di pagar", "Belum", "PENDING", "09:00");
                 pickupRequestRepository.save(req1);
 
                 PickupRequest req2 = new PickupRequest(
                                 "REQ-0002", "kurt", "Kurt Seto",
                                 "Jl. Sudirman No. 45, Jakarta", "Kertas",
-                                5.0, "2026-06-02", "-", "ner", "COMPLETED", "10:00");
+                                5.0, "2026-06-02", "-", "Ner Kurniawan", "COMPLETED", "10:00");
                 pickupRequestRepository.save(req2);
 
                 PickupRequest req3 = new PickupRequest(
                                 "REQ-0003", "raynar", "Raynar Khalid Mahardika",
                                 "Jingga Residence ganteng", "Elektronik",
-                                1.2, "2026-06-03", "Hati-hati barangnya", "ner", "ON_ROUTE", "13:00");
+                                8.0, "2026-06-03", "Hati-hati barangnya", "Ner Kurniawan", "ON_ROUTE", "13:00");
                 pickupRequestRepository.save(req3);
 
                 PickupRequest req4 = new PickupRequest(
                                 "REQ-0004", "rifat", "Rifat Hanaf",
                                 "padang", "Kaca",
-                                3.0, "2026-06-04", "-", "begin", "ASSIGNED", "14:00");
+                                6.0, "2026-06-04", "-", "Begin Saputra", "ASSIGNED", "14:00");
                 pickupRequestRepository.save(req4);
 
                 PickupRequest req5 = new PickupRequest(
                                 "REQ-0005", "kevin", "Kevin",
                                 "Hub Bandung", "Logam",
-                                8.0, "2026-06-05", "Berat banget", "begin", "COMPLETED", "08:00");
+                                8.0, "2026-06-05", "Berat banget", "Begin Saputra", "COMPLETED", "08:00");
                 pickupRequestRepository.save(req5);
 
+                PickupRequest req6 = new PickupRequest(
+                                "REQ-0006", "andi", "Andi Wijaya",
+                                "Jl. Mawar No. 5", "Kertas",
+                                5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30");
+                pickupRequestRepository.save(req6);
+
+                PickupRequest req7 = new PickupRequest(
+                                "REQ-0007", "rina", "Rina Lestari",
+                                "Jl. Anggrek No. 12", "Kaca",
+                                8.0, "2026-05-21", "Ketuk pintu", "Eko Pratama", "ON_ROUTE", "10:00");
+                pickupRequestRepository.save(req7);
+
+                PickupRequest req8 = new PickupRequest(
+                                "REQ-0008", "doni", "Doni Pratama",
+                                "Jl. Kenanga No. 7", "Logam",
+                                7.0, "2026-05-21", "", "Budi Santoso", "COMPLETED", "10:45");
+                req8.setActualWeight(7.0);
+                pickupRequestRepository.save(req8);
+
+                PickupRequest req9 = new PickupRequest(
+                                "REQ-0009", "maya", "Maya Anggun",
+                                "Jl. Cempaka No. 9", "Plastik",
+                                5.0, "2026-05-22", "", "Budi Santoso", "ASSIGNED", "11:30");
+                pickupRequestRepository.save(req9);
+
                 // Seed verifikasi untuk request yang sudah COMPLETED
-                seedPickupVerifications(req2, req5);
+                seedPickupVerifications(req2, req5, req8);
 
                 System.out.println("[Seeder] Pickup requests berhasil ditanam: " + pickupRequestRepository.count()
                                 + " request.");

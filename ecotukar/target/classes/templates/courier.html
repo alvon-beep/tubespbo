@@ -135,7 +135,7 @@
                 const pickups = await res.json();
 
                 // Filter requests assigned to the logged-in courier
-                const courierPickups = pickups.filter(p => p.courier === myCourierName || p.courier === 'Budi S.'); // Keep Budi S. for dummy data compatibility if needed
+                const courierPickups = pickups.filter(p => p.courier === myCourierName);
                 
                 // Count active pending tasks
                 const activeTasks = courierPickups.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');
