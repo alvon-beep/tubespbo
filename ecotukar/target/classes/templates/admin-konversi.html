@@ -13,6 +13,36 @@
     </style>
 </head>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col lg:flex-row antialiased">
+    <div id="toastContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
+    <script>
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const typeClasses = {
+                success: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+                error: 'bg-rose-50 border-rose-200 text-rose-900',
+                warning: 'bg-amber-50 border-amber-200 text-amber-900',
+                info: 'bg-slate-50 border-slate-200 text-slate-900'
+            };
+            toast.className = 'max-w-sm w-full rounded-2xl px-4 py-3 border shadow-xl transition duration-300';
+            toast.className += ' ' + (typeClasses[type] || typeClasses.info);
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            toast.innerHTML = String(message).replace(/\n/g, '<br>');
+            document.getElementById('toastContainer').appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            }, 4500);
+        }
+        function toastSuccess(message) { showToast(message, 'success'); }
+        function toastError(message) { showToast(message, 'error'); }
+        function toastInfo(message) { showToast(message, 'info'); }
+    </script>
 
     <!-- ===== Sidebar ===== -->
     <aside class="hidden lg:flex w-64 bg-emerald-900 text-emerald-100 flex-col p-6 shrink-0 shadow-xl border-r border-emerald-950">
@@ -219,11 +249,11 @@
             const ratePerKg    = parseInt(convRate.value);
 
             if (!id) {
-                alert("Mohon pilih ID Permintaan dari dropdown.");
+                toastError("Mohon pilih ID Permintaan dari dropdown.");
                 return;
             }
             if (isNaN(actualWeight) || actualWeight < 5.0) {
-                alert("Berat riil sampah minimal 5 kg!");
+                toastError("Berat riil sampah minimal 5 kg!");
                 return;
             }
 
@@ -235,7 +265,7 @@
                 });
 
                 if (res.ok) {
-                    alert(`Konversi Berhasil!\n\nSampah untuk ID ${id} telah divalidasi.\nKoin telah dikreditkan ke saldo Customer.`);
+                    toastSuccess(`Konversi Berhasil!\n\nSampah untuk ID ${id} telah divalidasi.\nKoin telah dikreditkan ke saldo Customer.`);
                     convForm.reset();
                     convCustomerName.value = '';
                     updateRateFromType();
@@ -243,11 +273,11 @@
                     loadPickupDropdown();
                 } else {
                     const data = await res.json();
-                    alert(data.message || "Gagal memproses konversi koin. Pastikan ID Permintaan valid.");
+                    toastError(data.message || "Gagal memproses konversi koin. Pastikan ID Permintaan valid.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Kesalahan koneksi.");
+                toastError("Kesalahan koneksi.");
             }
         });
 

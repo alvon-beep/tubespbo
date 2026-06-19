@@ -7,6 +7,7 @@ com\ecotukar\repository\PickupRequestRepository.class
 com\ecotukar\EcoTukarApplication.class
 com\ecotukar\service\EcoTukarService.class
 com\ecotukar\repository\UserRepository.class
+com\ecotukar\config\DataSeeder.class
 com\ecotukar\model\AdminUser.class
 com\ecotukar\model\User.class
 com\ecotukar\model\WalletTransaction.class

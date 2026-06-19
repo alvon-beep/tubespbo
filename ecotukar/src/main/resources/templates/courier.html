@@ -17,6 +17,36 @@
     </style>
 </head>
 <body class="min-h-screen bg-emerald-50/40 font-sans text-slate-800 antialiased">
+    <div id="toastContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3"></div>
+    <script>
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const typeClasses = {
+                success: 'bg-emerald-50 border-emerald-200 text-emerald-900',
+                error: 'bg-rose-50 border-rose-200 text-rose-900',
+                warning: 'bg-amber-50 border-amber-200 text-amber-900',
+                info: 'bg-slate-50 border-slate-200 text-slate-900'
+            };
+            toast.className = 'max-w-sm w-full rounded-2xl px-4 py-3 border shadow-xl transition duration-300';
+            toast.className += ' ' + (typeClasses[type] || typeClasses.info);
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-10px)';
+            toast.innerHTML = String(message).replace(/\n/g, '<br>');
+            document.getElementById('toastContainer').appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+            });
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+            }, 4500);
+        }
+        function toastSuccess(message) { showToast(message, 'success'); }
+        function toastError(message) { showToast(message, 'error'); }
+        function toastInfo(message) { showToast(message, 'info'); }
+    </script>
 
     <!-- Mobile-First Container, centered on larger displays -->
     <div class="max-w-md mx-auto pb-28 min-h-screen bg-slate-50 shadow-2xl flex flex-col relative border-x border-emerald-100">
@@ -244,14 +274,14 @@
                     else if (newStatus === 'PICKED_UP') alertMsg = "Sampah telah diangkut ke kendaraan! Status diubah ke PICKED UP (Menunggu timbangan Admin).";
                     else if (newStatus === 'CANCELLED') alertMsg = "Jadwal penjemputan telah dibatalkan.";
 
-                    alert(`ID: ${id}\n\n${alertMsg}`);
+                    toastSuccess(`ID: ${id}\n\n${alertMsg}`);
                     fetchCourierRoutes();
                 } else {
-                    alert("Gagal merubah status tiket.");
+                    toastError("Gagal merubah status tiket.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Kesalahan koneksi.");
+                toastError("Kesalahan koneksi.");
             }
         }
 
@@ -286,16 +316,16 @@
 
                 if (res.ok) {
                     const data = await res.json();
-                    alert(`ID: ${id}\n\n${data.message}\nVerifikasi ID: ${data.verificationId}\n\nStatus diubah ke PICKED UP (Menunggu timbangan Admin).`);
+                    toastSuccess(`ID: ${id}\n\n${data.message}\nVerifikasi ID: ${data.verificationId}\n\nStatus diubah ke PICKED UP (Menunggu timbangan Admin).`);
                     closeVerifyModal();
                     fetchCourierRoutes();
                 } else {
                     const err = await res.json();
-                    alert(err.message || "Gagal memverifikasi penjemputan.");
+                    toastError(err.message || "Gagal memverifikasi penjemputan.");
                 }
             } catch(e) {
                 console.error(e);
-                alert("Kesalahan koneksi.");
+                toastError("Kesalahan koneksi.");
             }
         });
 
