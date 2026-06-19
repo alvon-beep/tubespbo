@@ -1,0 +1,24 @@
+spring.application.name=ecotukar
+server.port=8080
+
+spring.thymeleaf.cache=false
+spring.thymeleaf.enabled=true
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+
+logging.level.org.springframework.web=INFO
+logging.level.com.ecotukar=DEBUG
+
+# Database MySQL Configuration
+spring.datasource.url=jdbc:mysql://localhost:3306/ecotukar?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+spring.datasource.username=root
+spring.datasource.password=
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA Configuration
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+# OpenRouteService API Key
+ors.api.key=MASUKKAN_API_KEY_KAMU_DISINI
