@@ -21,6 +21,7 @@ public class EcoTukarService {
     private final PickupRequestRepository pickupRequestRepository;
     private final PickupVerificationRepository pickupVerificationRepository;
     private final WalletTransactionRepository walletTransactionRepository;
+    private final GeocodingService geocodingService;
 
     private final AtomicInteger requestCounter = new AtomicInteger(1046);
     private final AtomicInteger verificationCounter = new AtomicInteger(1);
@@ -28,11 +29,13 @@ public class EcoTukarService {
     public EcoTukarService(UserRepository userRepository, 
                            PickupRequestRepository pickupRequestRepository,
                            PickupVerificationRepository pickupVerificationRepository,
-                           WalletTransactionRepository walletTransactionRepository) {
+                           WalletTransactionRepository walletTransactionRepository,
+                           GeocodingService geocodingService) {
         this.userRepository = userRepository;
         this.pickupRequestRepository = pickupRequestRepository;
         this.pickupVerificationRepository = pickupVerificationRepository;
         this.walletTransactionRepository = walletTransactionRepository;
+        this.geocodingService = geocodingService;
     }
 
     @PostConstruct
@@ -45,15 +48,15 @@ public class EcoTukarService {
         
         // Seed initial data if DB is empty
         if (reqCount == 0) {
-            pickupRequestRepository.save(new PickupRequest("REQ-1041", "sarah", "Sarah Putri", "Jl. Melati No. 21", "Plastik", 3.0, "2026-05-20", "Letakkan di pagar", "Budi Santoso", "ASSIGNED", "09:00"));
-            pickupRequestRepository.save(new PickupRequest("REQ-1042", "andi", "Andi Wijaya", "Jl. Mawar No. 5", "Kertas", 5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30"));
-            pickupRequestRepository.save(new PickupRequest("REQ-1043", "rina", "Rina Lestari", "Jl. Anggrek No. 12", "Kaca", 8.0, "2026-05-21", "Ketuk pintu", "Eko Pratama", "ON_ROUTE", "10:00"));
+            pickupRequestRepository.save(new PickupRequest("REQ-1041", "sarah", "Sarah Putri", "Jl. Melati No. 21", "Plastik", 3.0, "2026-05-20", "Letakkan di pagar", "Budi Santoso", "ASSIGNED", "09:00", -6.9141, 107.6180));
+            pickupRequestRepository.save(new PickupRequest("REQ-1042", "andi", "Andi Wijaya", "Jl. Mawar No. 5", "Kertas", 5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30", -6.9205, 107.6250));
+            pickupRequestRepository.save(new PickupRequest("REQ-1043", "rina", "Rina Lestari", "Jl. Anggrek No. 12", "Kaca", 8.0, "2026-05-21", "Ketuk pintu", "Eko Pratama", "ON_ROUTE", "10:00", -6.9125, 107.6320));
             
-            PickupRequest req4 = new PickupRequest("REQ-1044", "doni", "Doni Pratama", "Jl. Kenanga No. 7", "Logam", 7.0, "2026-05-21", "", "Budi Santoso", "COMPLETED", "10:45");
+            PickupRequest req4 = new PickupRequest("REQ-1044", "doni", "Doni Pratama", "Jl. Kenanga No. 7", "Logam", 7.0, "2026-05-21", "", "Budi Santoso", "COMPLETED", "10:45", -6.9312, 107.6115);
             req4.setActualWeight(7.0);
             pickupRequestRepository.save(req4);
             
-            pickupRequestRepository.save(new PickupRequest("REQ-1045", "maya", "Maya Anggun", "Jl. Cempaka No. 9", "Plastik", 5.0, "2026-05-22", "", "Belum", "PENDING", "11:30"));
+            pickupRequestRepository.save(new PickupRequest("REQ-1045", "maya", "Maya Anggun", "Jl. Cempaka No. 9", "Plastik", 5.0, "2026-05-22", "", "Belum", "PENDING", "11:30", -6.9080, 107.6050));
             
             // Re-adjust counter
             requestCounter.set(1046);
@@ -78,6 +81,12 @@ public class EcoTukarService {
         req.setCourier("Belum");
         req.setStatus("PENDING");
         req.setTime("12:00");
+
+        // Geocode the address to find lat and lng
+        double[] coords = geocodingService.geocode(req.getAddress());
+        req.setLat(coords[0]);
+        req.setLng(coords[1]);
+
         return pickupRequestRepository.save(req);
     }
 

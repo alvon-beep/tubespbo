@@ -4,11 +4,14 @@ com\ecotukar\model\EWallet.class
 com\ecotukar\config\SecurityConfig.class
 com\ecotukar\model\PickupVerification.class
 com\ecotukar\repository\PickupRequestRepository.class
+com\ecotukar\service\RoutingStrategy.class
 com\ecotukar\EcoTukarApplication.class
 com\ecotukar\service\EcoTukarService.class
 com\ecotukar\repository\UserRepository.class
 com\ecotukar\config\DataSeeder.class
 com\ecotukar\model\AdminUser.class
+com\ecotukar\service\GeocodingService.class
+com\ecotukar\service\OrsMatrixClient.class
 com\ecotukar\model\User.class
 com\ecotukar\model\WalletTransaction.class
 com\ecotukar\repository\PickupVerificationRepository.class
@@ -17,4 +20,5 @@ com\ecotukar\service\CustomUserDetailsService.class
 com\ecotukar\model\PickupRequest.class
 com\ecotukar\controller\AuthController.class
 com\ecotukar\model\CourierUser.class
+com\ecotukar\service\NearestNeighborStrategy.class
 com\ecotukar\controller\ApiController.class

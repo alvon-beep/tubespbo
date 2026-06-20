@@ -20,6 +20,8 @@ public class PickupRequest {
     private String courier; // Assigned courier name or "Belum"
     private String status; // PENDING, ASSIGNED, ON_ROUTE, COMPLETED, CANCELLED
     private String time; // Simulated pickup target time
+    private Double lat;
+    private Double lng;
 
     public PickupRequest() {}
 
@@ -37,6 +39,14 @@ public class PickupRequest {
         this.courier = courier;
         this.status = status;
         this.time = time;
+    }
+
+    public PickupRequest(String id, String username, String customerName, String address, String wasteType, 
+                         double estimatedWeight, String date, String note, String courier, String status, String time,
+                         Double lat, Double lng) {
+        this(id, username, customerName, address, wasteType, estimatedWeight, date, note, courier, status, time);
+        this.lat = lat;
+        this.lng = lng;
     }
 
     public String getId() { return id; }
@@ -74,4 +84,10 @@ public class PickupRequest {
 
     public String getTime() { return time; }
     public void setTime(String time) { this.time = time; }
+
+    public Double getLat() { return lat; }
+    public void setLat(Double lat) { this.lat = lat; }
+
+    public Double getLng() { return lng; }
+    public void setLng(Double lng) { this.lng = lng; }
 }

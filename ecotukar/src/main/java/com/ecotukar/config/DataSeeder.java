@@ -276,56 +276,65 @@ public class DataSeeder implements CommandLineRunner {
                 PickupRequest req1 = new PickupRequest(
                                 "REQ-0001", "sarah", "Sarah Putri",
                                 "Jl. Melati No. 21", "Plastik",
-                                3.0, "2026-05-20", "Letakkan di pagar", "Belum", "PENDING", "09:00");
+                                3.0, "2026-05-20", "Letakkan di pagar", "Belum", "PENDING", "09:00",
+                                -6.9141, 107.6180);
                 pickupRequestRepository.save(req1);
 
                 PickupRequest req2 = new PickupRequest(
                                 "REQ-0002", "kurt", "Kurt Seto",
                                 "Jl. Sudirman No. 45, Jakarta", "Kertas",
-                                5.0, "2026-06-02", "-", "Ner Kurniawan", "COMPLETED", "10:00");
+                                5.0, "2026-06-02", "-", "Ner Kurniawan", "COMPLETED", "10:00",
+                                -6.9380, 107.6220);
                 pickupRequestRepository.save(req2);
 
                 PickupRequest req3 = new PickupRequest(
                                 "REQ-0003", "raynar", "Raynar Khalid Mahardika",
                                 "Jingga Residence ganteng", "Elektronik",
-                                8.0, "2026-06-03", "Hati-hati barangnya", "Ner Kurniawan", "ON_ROUTE", "13:00");
+                                8.0, "2026-06-03", "Hati-hati barangnya", "Ner Kurniawan", "ON_ROUTE", "13:00",
+                                -6.9450, 107.6300);
                 pickupRequestRepository.save(req3);
 
                 PickupRequest req4 = new PickupRequest(
                                 "REQ-0004", "rifat", "Rifat Hanaf",
                                 "padang", "Kaca",
-                                6.0, "2026-06-04", "-", "Begin Saputra", "ASSIGNED", "14:00");
+                                6.0, "2026-06-04", "-", "Begin Saputra", "ASSIGNED", "14:00",
+                                -6.9250, 107.5950);
                 pickupRequestRepository.save(req4);
 
                 PickupRequest req5 = new PickupRequest(
                                 "REQ-0005", "kevin", "Kevin",
                                 "Hub Bandung", "Logam",
-                                8.0, "2026-06-05", "Berat banget", "Begin Saputra", "COMPLETED", "08:00");
+                                8.0, "2026-06-05", "Berat banget", "Begin Saputra", "COMPLETED", "08:00",
+                                -6.9175, 107.6191);
                 pickupRequestRepository.save(req5);
 
                 PickupRequest req6 = new PickupRequest(
                                 "REQ-0006", "andi", "Andi Wijaya",
                                 "Jl. Mawar No. 5", "Kertas",
-                                5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30");
+                                5.0, "2026-05-20", "Di garasi", "Belum", "PENDING", "09:30",
+                                -6.9205, 107.6250);
                 pickupRequestRepository.save(req6);
 
                 PickupRequest req7 = new PickupRequest(
                                 "REQ-0007", "rina", "Rina Lestari",
                                 "Jl. Anggrek No. 12", "Kaca",
-                                8.0, "2026-05-21", "Ketuk pintu", "Eko Pratama", "ON_ROUTE", "10:00");
+                                8.0, "2026-05-21", "Ketuk pintu", "Eko Pratama", "ON_ROUTE", "10:00",
+                                -6.9125, 107.6320);
                 pickupRequestRepository.save(req7);
 
                 PickupRequest req8 = new PickupRequest(
                                 "REQ-0008", "doni", "Doni Pratama",
                                 "Jl. Kenanga No. 7", "Logam",
-                                7.0, "2026-05-21", "", "Budi Santoso", "COMPLETED", "10:45");
+                                7.0, "2026-05-21", "", "Budi Santoso", "COMPLETED", "10:45",
+                                -6.9312, 107.6115);
                 req8.setActualWeight(7.0);
                 pickupRequestRepository.save(req8);
 
                 PickupRequest req9 = new PickupRequest(
                                 "REQ-0009", "maya", "Maya Anggun",
                                 "Jl. Cempaka No. 9", "Plastik",
-                                5.0, "2026-05-22", "", "Budi Santoso", "ASSIGNED", "11:30");
+                                5.0, "2026-05-22", "", "Budi Santoso", "ASSIGNED", "11:30",
+                                -6.9080, 107.6050);
                 pickupRequestRepository.save(req9);
 
                 // Seed verifikasi untuk request yang sudah COMPLETED

@@ -3,10 +3,11 @@ package com.ecotukar.controller;
 import com.ecotukar.model.User;
 import com.ecotukar.model.PickupRequest;
 import com.ecotukar.model.WalletTransaction;
-import com.ecotukar.model.WalletTransaction;
 import com.ecotukar.model.CourierUser;
 import com.ecotukar.repository.UserRepository;
 import com.ecotukar.service.EcoTukarService;
+import com.ecotukar.service.RoutingStrategy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -22,11 +24,19 @@ public class ApiController {
     private final EcoTukarService service;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RoutingStrategy routingStrategy;
 
-    public ApiController(EcoTukarService service, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    @Value("${ecotukar.hub.lat:-6.9175}")
+    private double hubLat;
+
+    @Value("${ecotukar.hub.lng:107.6191}")
+    private double hubLng;
+
+    public ApiController(EcoTukarService service, UserRepository userRepository, PasswordEncoder passwordEncoder, RoutingStrategy routingStrategy) {
         this.service = service;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.routingStrategy = routingStrategy;
     }
 
     // Get current customer profile
@@ -289,5 +299,23 @@ public class ApiController {
 
         userRepository.save(customer);
         return Map.of("message", "Customer berhasil didaftarkan", "status", "success");
+    }
+
+    // Get optimized route for a specific courier
+    @GetMapping("/couriers/{username}/route")
+    public List<PickupRequest> getCourierRoute(@PathVariable String username) {
+        User courier = service.getUserByUsername(username);
+        if (courier == null || !"COURIER".equalsIgnoreCase(courier.getRole())) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Kurir tidak ditemukan");
+        }
+
+        // Get all active pickups (ASSIGNED or ON_ROUTE) assigned to this courier
+        List<PickupRequest> activePickups = service.getPickups().stream()
+                .filter(p -> username.equals(p.getCourier()) || courier.getName().equals(p.getCourier()))
+                .filter(p -> "ASSIGNED".equalsIgnoreCase(p.getStatus()) || "ON_ROUTE".equalsIgnoreCase(p.getStatus()))
+                .collect(Collectors.toList());
+
+        // Sort using nearest-neighbor routing strategy starting from the Hub
+        return routingStrategy.optimizeRoute(hubLat, hubLng, activePickups);
     }
 }

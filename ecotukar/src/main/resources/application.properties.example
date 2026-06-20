@@ -22,3 +22,7 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
 # OpenRouteService API Key
 ors.api.key=MASUKKAN_API_KEY_KAMU_DISINI
+
+# Default Hub Location (Bandung center coordinates)
+ecotukar.hub.lat=-6.9175
+ecotukar.hub.lng=107.6191
