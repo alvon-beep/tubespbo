@@ -25,6 +25,9 @@ public class GeocodingService {
     @Value("${ecotukar.hub.lng:107.6191}")
     private double defaultLng;
 
+    @Value("${google.api.key:}")
+    private String googleApiKey;
+
     /**
      * Geocode an address into [latitude, longitude].
      * If the address is invalid or the request fails, returns default hub
@@ -46,33 +49,40 @@ public class GeocodingService {
         if (address.equalsIgnoreCase("Hub Jakarta")) {
             return new double[] { -6.9380, 107.6220 }; // Demo coordinates in Bandung
         }
-
         try {
-            // 1. Use .build().toUri() instead of .toUriString()
-            java.net.URI uri = UriComponentsBuilder.fromHttpUrl("https://nominatim.openstreetmap.org/search")
-                    .queryParam("q", address)
-                    .queryParam("format", "json")
-                    .queryParam("limit", 1)
+            if (googleApiKey == null || googleApiKey.trim().isEmpty()) {
+                throw new IllegalStateException("Google API key is missing");
+            }
+
+            java.net.URI uri = UriComponentsBuilder.fromHttpUrl("https://maps.googleapis.com/maps/api/geocode/json")
+                    .queryParam("address", address)
+                    .queryParam("key", googleApiKey)
                     .build()
                     .toUri();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("User-Agent", "EcoTukar-App/1.0 (contact@ecotukar.id)");
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            // Google Maps handles JSON natively, standard RestTemplate GET works perfectly
+            ResponseEntity<Map> response = restTemplate.getForEntity(uri, Map.class);
+            Map<?, ?> body = response.getBody();
 
-            // 2. Pass the 'uri' object directly into the exchange method
-            ResponseEntity<List> response = restTemplate.exchange(uri, HttpMethod.GET, entity, List.class);
-            List<?> body = response.getBody();
+            if (body != null && "OK".equals(body.get("status"))) {
+                List<?> results = (List<?>) body.get("results");
+                if (!results.isEmpty()) {
+                    Map<?, ?> firstResult = (Map<?, ?>) results.get(0);
+                    Map<?, ?> geometry = (Map<?, ?>) firstResult.get("geometry");
+                    Map<?, ?> location = (Map<?, ?>) geometry.get("location");
 
-            if (body != null && !body.isEmpty()) {
-                Map<?, ?> first = (Map<?, ?>) body.get(0);
-                double lat = Double.parseDouble(first.get("lat").toString());
-                double lon = Double.parseDouble(first.get("lon").toString());
-                log.info("Geocoded address '{}' to [{}, {}]", address, lat, lon);
-                return new double[] { lat, lon };
+                    double lat = Double.parseDouble(location.get("lat").toString());
+                    double lon = Double.parseDouble(location.get("lng").toString()); // Google uses 'lng' instead of
+                                                                                     // 'lon'
+
+                    log.info("Google Geocoded address '{}' to [{}, {}]", address, lat, lon);
+                    return new double[] { lat, lon };
+                }
+            } else {
+                log.warn("Google API returned status: {}", body != null ? body.get("status") : "NULL");
             }
         } catch (Exception e) {
-            log.error("Failed to geocode address '{}': {}", address, e.getMessage());
+            log.error("Failed to Google geocode address '{}': {}", address, e.getMessage());
         }
 
         log.warn("Fallback to default coords [{}, {}] for address '{}'", defaultLat, defaultLng, address);

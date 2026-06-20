@@ -20,8 +20,9 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
-# OpenRouteService API Key
+# API Key
 ors.api.key=MASUKKAN_API_KEY_KAMU_DISINI
+google.api.key=YOUR_ACTUAL_GOOGLE_MAPS_API_KEY_HERE
 
 # Default Hub Location (Bandung center coordinates)
 ecotukar.hub.lat=-6.9175

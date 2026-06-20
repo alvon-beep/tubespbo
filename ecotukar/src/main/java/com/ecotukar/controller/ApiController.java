@@ -11,8 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +36,8 @@ public class ApiController {
     @Value("${ecotukar.hub.lng:107.6191}")
     private double hubLng;
 
-    public ApiController(EcoTukarService service, UserRepository userRepository, PasswordEncoder passwordEncoder, RoutingStrategy routingStrategy) {
+    public ApiController(EcoTukarService service, UserRepository userRepository, PasswordEncoder passwordEncoder,
+            RoutingStrategy routingStrategy) {
         this.service = service;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -46,7 +51,8 @@ public class ApiController {
         User user = service.getUserByUsername(username);
         if (user == null) {
             // Safe fallback
-            return new com.ecotukar.model.CustomerUser(username, username, username + "@mail.com", "👤", "Alamat Belum Set", "2026", 0, 0);
+            return new com.ecotukar.model.CustomerUser(username, username, username + "@mail.com", "👤",
+                    "Alamat Belum Set", "2026", 0, 0);
         }
         return user;
     }
@@ -66,18 +72,18 @@ public class ApiController {
         String note = (String) body.getOrDefault("note", "");
         String customAddress = (String) body.get("address");
         String username = (principal != null) ? principal.getName() : (String) body.getOrDefault("username", "sarah");
-        
+
         if (weight < 5.0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estimasi berat minimal 5 kg!");
         }
 
         User customer = service.getUserByUsername(username);
         String name = (customer != null) ? customer.getName() : "Pengguna Baru";
-        String addr = (customAddress != null && !customAddress.trim().isEmpty()) ? customAddress : ((customer != null) ? customer.getAddress() : "Alamat default");
+        String addr = (customAddress != null && !customAddress.trim().isEmpty()) ? customAddress
+                : ((customer != null) ? customer.getAddress() : "Alamat default");
 
         PickupRequest req = new PickupRequest(
-            null, username, name, addr, wasteType, weight, date, note, "Belum", "PENDING", "12:00"
-        );
+                null, username, name, addr, wasteType, weight, date, note, "Belum", "PENDING", "12:00");
         return service.addPickup(req);
     }
 
@@ -106,12 +112,12 @@ public class ApiController {
         com.ecotukar.model.PickupVerification verification = service.verifyPickup(id, dataValid, physicalCondition);
         if (verification != null) {
             return Map.of(
-                "message", "Penjemputan berhasil diverifikasi",
-                "status", "success",
-                "verificationId", verification.getVerificationId()
-            );
+                    "message", "Penjemputan berhasil diverifikasi",
+                    "status", "success",
+                    "verificationId", verification.getVerificationId());
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Gagal memverifikasi penjemputan. Tiket tidak ditemukan.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Gagal memverifikasi penjemputan. Tiket tidak ditemukan.");
         }
     }
 
@@ -120,7 +126,7 @@ public class ApiController {
     public Map<String, String> convertCoins(@PathVariable String id, @RequestBody Map<String, Object> body) {
         double actualWeight = Double.parseDouble(body.get("actualWeight").toString());
         int ratePerKg = Integer.parseInt(body.get("ratePerKg").toString());
-        
+
         if (actualWeight < 5.0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Berat riil sampah minimal 5 kg!");
         }
@@ -131,7 +137,8 @@ public class ApiController {
 
     // Convert coins to ewallet balance
     @PostMapping("/wallet/convert")
-    public Map<String, Object> convertCoinsToEWallet(@RequestBody Map<String, Object> body, java.security.Principal principal) {
+    public Map<String, Object> convertCoinsToEWallet(@RequestBody Map<String, Object> body,
+            java.security.Principal principal) {
         String username = (principal != null) ? principal.getName() : (String) body.getOrDefault("username", "sarah");
         int coins = Integer.parseInt(body.get("coins").toString());
 
@@ -141,7 +148,8 @@ public class ApiController {
 
         boolean success = service.convertCoinsToEWallet(username, coins);
         if (!success) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Koin tidak mencukupi atau pengguna tidak ditemukan");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Koin tidak mencukupi atau pengguna tidak ditemukan");
         }
 
         return Map.of("message", "Konversi koin ke saldo E-Wallet berhasil!", "status", "success");
@@ -162,18 +170,18 @@ public class ApiController {
     @GetMapping("/couriers")
     public List<Map<String, String>> getCouriers() {
         return userRepository.findAll().stream()
-            .filter(u -> u instanceof CourierUser)
-            .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
-            .collect(java.util.stream.Collectors.toList());
+                .filter(u -> u instanceof CourierUser)
+                .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     // Get list of all customers from database
     @GetMapping("/customers")
     public List<Map<String, String>> getCustomers() {
         return userRepository.findAll().stream()
-            .filter(u -> u instanceof com.ecotukar.model.CustomerUser)
-            .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
-            .collect(java.util.stream.Collectors.toList());
+                .filter(u -> u instanceof com.ecotukar.model.CustomerUser)
+                .map(u -> Map.of("username", u.getUsername(), "name", u.getName()))
+                .collect(java.util.stream.Collectors.toList());
     }
 
     // Admin register new courier
@@ -202,7 +210,7 @@ public class ApiController {
         courier.setEwalletBalance(0);
 
         userRepository.save(courier);
-        
+
         return Map.of("message", "Kurir berhasil didaftarkan", "status", "success");
     }
 
@@ -219,14 +227,14 @@ public class ApiController {
     public List<Map<String, Object>> getAllUsers() {
         return userRepository.findAll().stream().map(u -> {
             Map<String, Object> m = new java.util.LinkedHashMap<>();
-            m.put("username",       u.getUsername());
-            m.put("name",           u.getName());
-            m.put("email",          u.getEmail());
-            m.put("address",        u.getAddress());
-            m.put("role",           u.getRole());
-            m.put("avatar",         u.getAvatar());
-            m.put("joined",         u.getJoined());
-            m.put("points",         u.getPoints());
+            m.put("username", u.getUsername());
+            m.put("name", u.getName());
+            m.put("email", u.getEmail());
+            m.put("address", u.getAddress());
+            m.put("role", u.getRole());
+            m.put("avatar", u.getAvatar());
+            m.put("joined", u.getJoined());
+            m.put("points", u.getPoints());
             m.put("ewalletBalance", u.getEwalletBalance());
             return m;
         }).collect(java.util.stream.Collectors.toList());
@@ -240,11 +248,16 @@ public class ApiController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User tidak ditemukan");
         }
 
-        if (body.containsKey("name"))           user.setName((String) body.get("name"));
-        if (body.containsKey("email"))          user.setEmail((String) body.get("email"));
-        if (body.containsKey("address"))        user.setAddress((String) body.get("address"));
-        if (body.containsKey("points"))         user.setPoints(Integer.parseInt(body.get("points").toString()));
-        if (body.containsKey("ewalletBalance")) user.setEwalletBalance(Integer.parseInt(body.get("ewalletBalance").toString()));
+        if (body.containsKey("name"))
+            user.setName((String) body.get("name"));
+        if (body.containsKey("email"))
+            user.setEmail((String) body.get("email"));
+        if (body.containsKey("address"))
+            user.setAddress((String) body.get("address"));
+        if (body.containsKey("points"))
+            user.setPoints(Integer.parseInt(body.get("points").toString()));
+        if (body.containsKey("ewalletBalance"))
+            user.setEwalletBalance(Integer.parseInt(body.get("ewalletBalance").toString()));
         if (body.containsKey("password")) {
             String newPw = (String) body.get("password");
             if (newPw != null && !newPw.isBlank()) {
@@ -274,10 +287,10 @@ public class ApiController {
     @PostMapping("/admin/customers")
     public Map<String, String> registerCustomer(@RequestBody Map<String, String> body) {
         String username = body.get("username");
-        String name     = body.get("name");
+        String name = body.get("name");
         String password = body.get("password");
-        String email    = body.get("email");
-        String address  = body.getOrDefault("address", "");
+        String email = body.get("email");
+        String address = body.getOrDefault("address", "");
 
         if (username == null || name == null || password == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Data tidak lengkap");
