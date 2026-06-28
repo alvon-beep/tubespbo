@@ -15,7 +15,7 @@ Pastikan aplikasi berikut sudah terinstall:
 3. **XAMPP** (untuk MySQL) — [download](https://www.apachefriends.org)
 
 **Note : untuk database silahkan buat database kosong dengan query :**
-`CREATE DATABASE ecotukar;`
+```CREATE DATABASE ecotukar;```
 
 Selain itu, daftarkan diri di [openrouteservice.org](https://openrouteservice.org/) untuk mendapatkan API Key gratis. Ini berfungsi untuk routing
 
