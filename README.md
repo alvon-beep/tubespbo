@@ -14,6 +14,9 @@ Pastikan aplikasi berikut sudah terinstall:
 2. **Maven** — [download](https://maven.apache.org/download.cgi)
 3. **XAMPP** (untuk MySQL) — [download](https://www.apachefriends.org)
 
+**Note : untuk database silahkan buat database kosong dengan query :**
+`CREATE DATABASE ecotukar;`
+
 Selain itu, daftarkan diri di [openrouteservice.org](https://openrouteservice.org/) untuk mendapatkan API Key gratis. Ini berfungsi untuk routing
 
 Anda juga akan membutuhkan [Google Maps Geocoding API](https://developers.google.com/maps/documentation/geocoding/guides-v3/overview) untuk mendapat lokasi dari alamat. API ini memiliki free usage 10000 kali per bulan. Login membutuhkan kartu visa/mastercard.
